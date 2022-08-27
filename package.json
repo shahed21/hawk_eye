@@ -4,7 +4,9 @@
   "description": "Unmanned Aerial Vehicle Ground Mission Display System",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon file.js",
+    "test": "nodemon stream.js",
+    "file": "nodemon file.js"
   },
   "keywords": [
     "YAMCS",
@@ -31,6 +33,8 @@
     "arr-swap": "^1.0.1",
     "array-move": "^4.0.0",
     "body-parser": "^1.20.0",
+    "csv-parse": "^5.3.0",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "mongoose": "^6.5.2",

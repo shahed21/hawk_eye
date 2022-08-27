@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- Include the CesiumJS JavaScript and CSS files -->
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.96/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.96/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <style>
+    #contextMenu{
+      position: absolute;
+      top: 5%;
+      transform: translate(100%, 0%);
+      width: 600px;
+    }
+    #wayPointListDiv{
+      position: absolute;
+      top: 5%;
+      transform: translate(200%, 0%);
+      width: 500px;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<div id="contextMenu"></div>
+<div id="wayPointListDiv">
+  <ul id="wayPointList"></ul>
+</div>
+<script src="config.js"></script>
+<script src="cesiumTokenConfig.js"></script>
+<script src="pickWayPoints.js"></script>
+</body>
+</html>
