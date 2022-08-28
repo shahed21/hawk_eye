@@ -3,7 +3,7 @@ const { parse } = require('csv-parse')
 const fs = require('fs') 
 
 
-const csvFilePath='small_data.csv';
+const csvFilePath='data/new_small_data.csv';
 const port = 5000;
 const app = express();
 const data = [];
@@ -76,6 +76,8 @@ fs.createReadStream(csvFilePath)
                 rowData[colHeaders[j]] = element;
                 j++;
             });
+
+            //This is where we should add more data
             jsonData.push(rowData);
         }
         index++;

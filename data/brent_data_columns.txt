@@ -1,0 +1,41 @@
+Time * This is system clock when data packet was sent
+DeltaTimeMS * This is a millisecond counter from start of data
+RollSpeed
+PitchSpeed
+YawSpeed
+Q0
+Q1
+Q2
+Q3
+Lat * This is from GPS
+Lon * This is from GPS
+Alt * This is from GPS
+vel_n * This is from GPS
+vel_e * This is from GPS
+vel_d * This is from GPS
+GPSYaw * This is from GPS
+airspeed
+baro_alt
+rcin0
+rcin1
+rcin2
+rcin3
+rcin4
+rcin5
+rcin6
+rcin7
+rcin8
+rcin9
+rcin10
+rcin11
+rcin12
+rcin13
+rcin14
+rcin15
+control0
+control1
+control2
+control3
+euler0 * I believe this is Roll
+euler1 * I believe this is Pitch
+euler2 * Yaw
