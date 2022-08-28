@@ -19,22 +19,6 @@ setup_live_sse_connection(positionProperty, orientationProperty);
 
 viewer.clock.shouldAnimate = true;
 
-// for (let i = 0; i < flightData.length; i++) {
-//   const dataPoint = flightData[i];
-
-//   // Declare the time for this individual sample and store it in a new JulianDate instance.
-//   const position = Cesium.Cartesian3.fromDegrees(dataPoint.longitude, dataPoint.latitude, dataPoint.height);
-//   // Store the position along with its timestamp.
-//   // Here we add the positions all upfront, but these can be added at run-time as samples are received from a server.
-//   positionProperty.addSample(time, position);
-
-//   viewer.entities.add({
-//     description: `Location: (${dataPoint.longitude}, ${dataPoint.latitude}, ${dataPoint.height})`,
-//     position: position,
-//     point: { pixelSize: 10, color: Cesium.Color.RED }
-//   });
-// }
-
 async function loadModel() {
   // Load the glTF model from Cesium ion.
   const airplaneUri = await Cesium.IonResource.fromAssetId(1257420);

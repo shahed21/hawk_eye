@@ -11,9 +11,12 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
             headingRadians+= 2* Math.PI;
         }
     }
+    // const altitudeOffset = +(38);
+    // data.alt_corrected = (+(data.alt_corrected)) + (altitudeOffset);
 
     const time = Cesium.JulianDate.fromIso8601(data.Time);
-    const position = Cesium.Cartesian3.fromDegrees(data.Lon, data.Lat, data.alt_corrected);
+    // const position = Cesium.Cartesian3.fromDegrees(data.Lon, data.Lat, data.alt_corrected);
+    const position = Cesium.Cartesian3.fromDegrees(data.Lon, data.Lat, data.Alt);
     // Store the position along with its timestamp.
     // Here we add the positions all upfront, but these can be added at run-time as samples are received from a server.
     positionProperty.addSample(time, position);
