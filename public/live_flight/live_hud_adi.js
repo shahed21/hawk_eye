@@ -173,7 +173,14 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
     line(-(compassWidth) * spanRatio,
         compassDepth,
         (compassWidth) * spanRatio,
-        compassDepth);
+        compassDepth
+    );
+    
+    line(0,
+        compassDepth - compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax'],
+        0,
+        compassDepth
+    );
 
     for (let key in headingDict) {
         if (headingDeg<horizontalHalfSpanAngle) {
@@ -489,20 +496,32 @@ function terrain(diameterADI, rollDeg, pitchDeg, headingDeg) {
         configDict['hud_adi']['terrain']['segments']['ground']['color']['B']);
 
     let colors = [ground, sky];
-    for (let i = 0; i < segmentAngles.length; i++) {
-        fill(colors[i]);
-        arc(
-            0,
-            0,
-            diameterADI,
-            diameterADI,
-            radians(segmentAngles[i]),
-            radians(segmentAngles[(i+1)%(segmentAngles.length)]),
-            OPEN
-        );
+    if (pitchDeg>configDict['hud_adi']['pitchLines']['pitchAngleSpan']/2) {
+        fill(sky);
+        circle(0,0, diameterADI);
+    } else {
+        if (pitchDeg<-configDict['hud_adi']['pitchLines']['pitchAngleSpan']/2) {
+            fill(ground);
+            circle(0,0,diameterADI);
+        }
+        else {
+            for (let i = 0; i < segmentAngles.length; i++) {
+                fill(colors[i]);
+                arc(
+                    0,
+                    0,
+                    diameterADI,
+                    diameterADI,
+                    radians(segmentAngles[i]),
+                    radians(segmentAngles[(i+1)%(segmentAngles.length)]),
+                    OPEN
+                );
+            }        
+        }
     }
 
     if (configDict['hud_adi']['terrainCompass']['display']) {
+        
         drawTerrainCompass(
             radius,
             horizonDipDepth,
@@ -608,6 +627,14 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
         }
     }
     rotate(radians(-headingDeg));
+
+    strokeWeight(1);
+    stroke('white');
+    fill('white');
+    textSize(diameterCompass*0.04);
+    textAlign(CENTER);
+    textMessage = headingDegrees.toFixed(0);
+    text(textMessage, 0, - diameterCompass/2 - (1*diameterCompass*0.04));
 }
 
 // function keyPressed() {
@@ -688,7 +715,7 @@ function draw() {
     drawADI(diameterADI);
     terrain(diameterADI, rollDegrees, pitchDegrees, headingDegrees);
     drawADIPlane(diameterADI);
-    postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
+    // postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
     drawCompass(diameterCompass, diameterADI, headingDegrees);
     if (configDict['hud_adi']['topCompass']['display']) {
         drawTopCompass(
