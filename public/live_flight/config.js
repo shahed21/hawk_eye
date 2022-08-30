@@ -99,6 +99,33 @@ let configDict = {
                 }
             }
         },
+        'topCompass': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'horizontalSpanRatio': 0.8,
+            'horizontalSpanAngle': 60,
+            'scaleMarkers': {
+                '-': {
+                    'radiusRatioMin': 0.03,
+                    'radiusRatioMax': 0.07
+                },
+                '|': {
+                    'radiusRatioMin': 0.02,
+                    'radiusRatioMax': 0.08
+                },
+                'text': {
+                    'textSizeToRadiusRatio': 0.05,
+                    'verticalDepthToRadiusRatio': 0.1
+                }
+            }
+        },
         'bankScales': {
             'arc': {
                 'stroke': {
