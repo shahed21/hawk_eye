@@ -13,8 +13,6 @@ function prepareMessage(res, jsonData, startTime) {
     const currTime = Date.now();
     while( parseInt( jsonData[jsonDataIndex].DeltaTimeMS ) <= ( currTime - startTime )) {
         res.write( `data: ${ JSON.stringify( jsonData[jsonDataIndex] ) }\n\n` );
-        // console.log(`data: ${ JSON.stringify( jsonData[jsonDataIndex] ) }`);
-        // console.log(jsonData[jsonDataIndex].DeltaTimeMS);
         jsonDataIndex++;
     }
 }
