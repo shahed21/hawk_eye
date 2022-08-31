@@ -473,7 +473,22 @@ function drawPitchLines(radius, diameterADI) {
                 -radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'],
                 configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan'],
                 radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'],
-                configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex]*diameterADI/configDict['hud_adi']['pitchLines']['pitchAngleSpan']);
+                configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+            );
+
+            if (lineTypeIndex===0) {
+                textSize(radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['textSizeRatio']);
+                stroke(c);
+                fill(c);
+                text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
+                    radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] + 5,
+                    configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+                );
+                text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
+                    -radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] - 5,
+                    configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+                );
+            }
         }
     }
 }
@@ -637,54 +652,18 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
     text(textMessage, 0, - diameterCompass/2 - (1*diameterCompass*0.04));
 }
 
-// function keyPressed() {
-//     if (keyCode === LEFT_ARROW) {
-//         rollDegrees+=1;
-//     } else if (keyCode === RIGHT_ARROW) {
-//         rollDegrees-=1;
-//     } else if (keyCode === UP_ARROW) {
-//         pitchDegrees+=1;
-//     } else if (keyCode === DOWN_ARROW) {
-//         pitchDegrees-=1;
-//     } else if (keyCode === 188) {
-//         headingDegrees+=1;
-//         headingDegrees%=360;
-//     } else if (keyCode === 190) {
-//         headingDegrees-=1;
-//         headingDegrees%=360;
-//     }
-// }
-
-// function keyCheck() {
-//     if (keyIsDown(LEFT_ARROW)) {
-//         rollDegrees+=1;
-//         rollDegrees%=360;
-//         if (rollDegrees>180) {
-//             rollDegrees-=360;
-//         }
-//     } else if (keyIsDown(RIGHT_ARROW)) {
-//         rollDegrees-=1;
-//         rollDegrees=rollDegrees%360;
-//         if (rollDegrees<-180) {
-//             rollDegrees+=360;
-//         }
-//     } else if (keyIsDown(UP_ARROW)) {
-//         pitchDegrees+=1;
-//     } else if (keyIsDown(DOWN_ARROW)) {
-//         pitchDegrees-=1;
-//     } else if (keyIsDown(188)) {
-//         headingDegrees+=1;
-//         headingDegrees%=360;
-//         // print(headingDegrees);
-//     } else if (keyIsDown(190)) {
-//         headingDegrees-=1;
-//         headingDegrees=headingDegrees%360;
-//         if (headingDegrees<0) {
-//             headingDegrees+=360;
-//         }
-//         // print(headingDegrees);
-//     }
-// }
+function dataCheck() {
+    if (rollDegrees>180) {
+        rollDegrees-=360;
+    }
+    if (rollDegrees<-180) {
+        rollDegrees+=360;
+    }
+    headingDegrees=headingDegrees%360;
+    if (headingDegrees<0) {
+        headingDegrees+=360;
+    }
+}
 
 function setup() {
     var elementId = 'adi';
@@ -711,6 +690,8 @@ function windowResized() {
 function draw() {
     background(50);
     translate(width/2, height/2);
+
+    dataCheck();
 
     drawADI(diameterADI);
     terrain(diameterADI, rollDegrees, pitchDegrees, headingDegrees);

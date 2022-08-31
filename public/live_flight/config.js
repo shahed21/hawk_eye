@@ -194,6 +194,7 @@ let configDict = {
             'lineType': [
                 {
                     // large
+                    'textSizeRatio': 0.05,
                     'radiusRatio': 0.2,
                     'angles': [-20, -10, 10, 20]
                 },
