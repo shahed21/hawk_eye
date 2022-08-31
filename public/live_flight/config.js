@@ -52,6 +52,45 @@ let configDict = {
                 }
             }
         },
+        'ASI': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'mps',
+            'verticalSpanRatio': 0.6,
+            'xOffset': 20,
+            'minorTickXOffset': 5,
+            'majorTickXOffset': 10,
+            'majorTickTextXOffset': 10,
+            'units': {
+                'mps': {
+                    'airSpeedSpan': 10,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'knots': {
+                    'airSpeedSpan': 20,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'mph': {
+                    'airSpeedSpan': 20,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'kph': {
+                    'airSpeedSpan': 36,
+                    'majorMarker': 5,
+                    'minorMarker': 1
+                },
+            }
+        },
         'terrain': {
             'verticalAngleSpan': 60,
             'segments': {

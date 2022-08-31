@@ -11,6 +11,10 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
             headingRadians+= 2* Math.PI;
         }
     }
+    airspeed['mps'] = +(data.airspeed);
+    airspeed['knots'] = (1.943844) * (airspeed['mps']);
+    airspeed['kph'] = (3.6) * (airspeed['mps']);
+    airspeed['mph'] = (2.236936) * (airspeed['mps']);
     // const altitudeOffset = +(38);
     // data.alt_corrected = (+(data.alt_corrected)) + (altitudeOffset);
 

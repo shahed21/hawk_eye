@@ -1,8 +1,17 @@
 let diameterADI = 0;
 let diameterCompass = 0;
+
+// Attitube Angles In Degrees
 var rollDegrees = 0;
 var pitchDegrees = 0;
 var headingDegrees = 0;
+
+// Airspeeds in different units
+const airspeed = {};
+airspeed['mps'] = 0;
+airspeed['knots'] = 0;
+airspeed['mph'] = 0;
+airspeed['kph'] = 0;
 
 let headingDict = {
     0: 'N',
@@ -156,37 +165,164 @@ function drawADIPlane(diameterADI) {
         configDict['hud_adi']['ADIPlane']['wings']['tipHeightToRadiusRatio'] * r);
 }
 
-function drawTopCompass(compassWidth, compassDepth, headingDeg) {
-    let spanRatio = configDict['hud_adi']['topCompass']['horizontalSpanRatio'];
-    // console.log(`Came Here`);
+function getTicks(axisMin, axisMax, minorMarker, majorMarker, minorMarkers, majorMarkers) {
+    var minorTickIndex = Math.ceil(axisMin/minorMarker);
+    while ((minorTickIndex)*(minorMarker) < (axisMax)) {
+        minorMarkers.push((minorTickIndex)*(minorMarker));
+        minorTickIndex++;
+    }
 
-    let horizontalHalfSpanAngle = configDict['hud_adi']['topCompass']['horizontalSpanAngle']/2;
-    noFill();
-    strokeWeight(configDict['hud_adi']['topCompass']['stroke']['weight']);
-    let c = color(
-        configDict['hud_adi']['topCompass']['stroke']['color']['R'],
-        configDict['hud_adi']['topCompass']['stroke']['color']['G'],
-        configDict['hud_adi']['topCompass']['stroke']['color']['B']
-    );
-    stroke(c);
+    var majorTickIndex = Math.ceil(axisMin/majorMarker);
+    while ((majorTickIndex)*(majorMarker) < (axisMax)) {
+        majorMarkers.push((majorTickIndex)*(majorMarker));
+        majorTickIndex++;
+    }
+}
 
-    line(-(compassWidth) * spanRatio,
-        compassDepth,
-        (compassWidth) * spanRatio,
-        compassDepth
-    );
+function drawASI(width, height) {
+    if (configDict['hud_adi']['ASI']['display']) {
+        const spanRatio = configDict['hud_adi']['ASI']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['ASI']['unitChosen'];
+        const airSpeedSpan = configDict['hud_adi']['ASI']['units'][unitChosen]['airSpeedSpan'];
+        const lowAirspeed = airspeed[unitChosen] - airSpeedSpan/2;
+        const highAirspeed = airspeed[unitChosen] + airSpeedSpan/2;
+        const airSpeedMinorTicks = [];
+        const airSpeedMajorTicks = [];
+        getTicks(
+            lowAirspeed,
+            highAirspeed,
+            configDict['hud_adi']['ASI']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['ASI']['units'][unitChosen]['majorMarker'],
+            airSpeedMinorTicks,
+            airSpeedMajorTicks
+        );
     
-    line(0,
-        compassDepth - compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax'],
-        0,
-        compassDepth
-    );
+        noFill();
+        strokeWeight(configDict['hud_adi']['ASI']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['ASI']['stroke']['color']['R'],
+            configDict['hud_adi']['ASI']['stroke']['color']['G'],
+            configDict['hud_adi']['ASI']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = -(width/2) + configDict['hud_adi']['ASI']['xOffset'];
 
-    for (let key in headingDict) {
-        if (headingDeg<horizontalHalfSpanAngle) {
-            if (((key-360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((key-360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
-                let x_pos = (headingDeg - (key-360)) * compassWidth / horizontalHalfSpanAngle;
-                // print(x_pos);
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos + configDict['hud_adi']['ASI']['xOffset'], 0);
+
+        airSpeedMinorTicks.forEach(airSpeedMinorTick => {
+            line(
+                xpos - configDict['hud_adi']['ASI']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMinorTick)-(lowAirspeed))/airSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMinorTick)-(lowAirspeed))/airSpeedSpan
+            );            
+        });
+
+        airSpeedMajorTicks.forEach(airSpeedMajorTick => {
+            line(
+                xpos - configDict['hud_adi']['ASI']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
+            );
+            text(
+                airSpeedMajorTick,
+                xpos + configDict['hud_adi']['ASI']['majorTickTextXOffset'],
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
+            );
+        });
+    }
+}
+
+function drawTopCompass(compassWidth, compassDepth, headingDeg) {
+    if (configDict['hud_adi']['topCompass']['display']) {
+        let spanRatio = configDict['hud_adi']['topCompass']['horizontalSpanRatio'];
+        // console.log(`Came Here`);
+    
+        let horizontalHalfSpanAngle = configDict['hud_adi']['topCompass']['horizontalSpanAngle']/2;
+        noFill();
+        strokeWeight(configDict['hud_adi']['topCompass']['stroke']['weight']);
+        let c = color(
+            configDict['hud_adi']['topCompass']['stroke']['color']['R'],
+            configDict['hud_adi']['topCompass']['stroke']['color']['G'],
+            configDict['hud_adi']['topCompass']['stroke']['color']['B']
+        );
+        stroke(c);
+    
+        line(-(compassWidth) * spanRatio,
+            compassDepth,
+            (compassWidth) * spanRatio,
+            compassDepth
+        );
+        
+        line(0,
+            compassDepth - compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax'],
+            0,
+            compassDepth
+        );
+    
+        for (let key in headingDict) {
+            if (headingDeg<horizontalHalfSpanAngle) {
+                if (((key-360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((key-360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                    let x_pos = (headingDeg - (key-360)) * compassWidth / horizontalHalfSpanAngle;
+                    // print(x_pos);
+                    switch (headingDict[key]) {
+                        case '-':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
+                            break;
+                        case '|':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
+                            break;
+                        default:
+                            textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
+                            fill(c);
+                            text(headingDict[key],
+                                x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
+                    }
+                }
+            }
+            if (headingDeg>(360-horizontalHalfSpanAngle)) {
+                if (((parseInt(key)+360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((parseInt(key)+360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                    let x_pos = (headingDeg - (parseInt(key)+360)) * compassWidth / horizontalHalfSpanAngle;
+                    // print(x_pos);
+                    switch (headingDict[key]) {
+                        case '-':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
+                            break;
+                        case '|':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
+                            break;
+                        default:
+                            textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
+                            fill(c);
+                            text(headingDict[key],
+                                x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
+                    }
+                }
+            }
+            if ((key < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&(key > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                // console.log(key);
+                // console.log(headingDeg);
+                let x_pos = (headingDeg - (key)) * compassWidth / horizontalHalfSpanAngle;
                 switch (headingDict[key]) {
                     case '-':
                         line(
@@ -206,64 +342,9 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
                         textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
                         text(headingDict[key],
-                            x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
+                            x_pos + (compassWidth*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
                             compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
                 }
-            }
-        }
-        if (headingDeg>(360-horizontalHalfSpanAngle)) {
-            if (((parseInt(key)+360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((parseInt(key)+360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
-                let x_pos = (headingDeg - (parseInt(key)+360)) * compassWidth / horizontalHalfSpanAngle;
-                // print(x_pos);
-                switch (headingDict[key]) {
-                    case '-':
-                        line(
-                            x_pos,
-                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
-                            x_pos,
-                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
-                        break;
-                    case '|':
-                        line(
-                            x_pos,
-                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
-                            x_pos,
-                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
-                        break;
-                    default:
-                        textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
-                        fill(c);
-                        text(headingDict[key],
-                            x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
-                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
-                }
-            }
-        }
-        if ((key < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&(key > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
-            // console.log(key);
-            // console.log(headingDeg);
-            let x_pos = (headingDeg - (key)) * compassWidth / horizontalHalfSpanAngle;
-            switch (headingDict[key]) {
-                case '-':
-                    line(
-                        x_pos,
-                        compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
-                        x_pos,
-                        compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
-                    break;
-                case '|':
-                    line(
-                        x_pos,
-                        compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
-                        x_pos,
-                        compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
-                    break;
-                default:
-                    textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
-                    fill(c);
-                    text(headingDict[key],
-                        x_pos + (compassWidth*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
-                        compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
             }
         }
     }
@@ -698,13 +779,12 @@ function draw() {
     drawADIPlane(diameterADI);
     // postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
     drawCompass(diameterCompass, diameterADI, headingDegrees);
-    if (configDict['hud_adi']['topCompass']['display']) {
-        drawTopCompass(
-            diameterCompass/2,
-            20 - height/2,
-            headingDegrees
-        );
-    }
+    drawTopCompass(
+        diameterCompass/2,
+        20 - height/2,
+        headingDegrees
+    );
+    drawASI(width, height);
 
     // keyCheck();
 }
