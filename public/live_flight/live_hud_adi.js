@@ -209,6 +209,15 @@ function drawASI(width, height) {
 
         line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
         line(xpos, 0, xpos + configDict['hud_adi']['ASI']['xOffset'], 0);
+        fill(c);
+        textSize(width*configDict['hud_adi']['ASI']['mainTextSizeRatio']);
+        textAlign(LEFT, CENTER);
+        textMessage = airspeed[unitChosen].toFixed(1);
+        text(textMessage, xpos + configDict['hud_adi']['ASI']['xOffset'], 0);
+
+        textSize(width*configDict['hud_adi']['ASI']['majorTickTextSizeRatio']);
+        noFill();
+
 
         airSpeedMinorTicks.forEach(airSpeedMinorTick => {
             line(
@@ -285,6 +294,7 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
                         default:
                             textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                             fill(c);
+                            textAlign(CENTER, BASELINE);
                             text(headingDict[key],
                                 x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                                 compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -313,6 +323,7 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
                         default:
                             textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                             fill(c);
+                            textAlign(CENTER, BASELINE);
                             text(headingDict[key],
                                 x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                                 compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -341,6 +352,7 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
                     default:
                         textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
+                        textAlign(CENTER, BASELINE);
                         text(headingDict[key],
                             x_pos + (compassWidth*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
                             compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -389,6 +401,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                     default:
                         textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
+                        textAlign(CENTER, BASELINE);
                         text(headingDict[key],
                             x_pos + (radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                             horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -417,6 +430,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                     default:
                         textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
+                        textAlign(CENTER, BASELINE);
                         text(headingDict[key],
                             x_pos + (radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                             horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -443,6 +457,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                 default:
                     textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                     fill(c);
+                    textAlign(CENTER, BASELINE);
                     text(headingDict[key],
                         x_pos + (radius*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
                         horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -561,10 +576,12 @@ function drawPitchLines(radius, diameterADI) {
                 textSize(radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['textSizeRatio']);
                 stroke(c);
                 fill(c);
+                textAlign(LEFT, CENTER);
                 text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
                     radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] + 5,
                     configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
                 );
+                textAlign(RIGHT, CENTER);
                 text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
                     -radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] - 5,
                     configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']

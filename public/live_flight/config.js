@@ -64,10 +64,12 @@ let configDict = {
             },
             'unitChosen': 'mps',
             'verticalSpanRatio': 0.6,
+            'mainTextSizeRatio': 0.03,
             'xOffset': 20,
             'minorTickXOffset': 5,
             'majorTickXOffset': 10,
             'majorTickTextXOffset': 10,
+            'majorTickTextSizeRatio': 0.02,
             'units': {
                 'mps': {
                     'airSpeedSpan': 10,
@@ -111,7 +113,7 @@ let configDict = {
             }
         },
         'terrainCompass': {
-            'display': false,
+            'display': true,
             'stroke': {
                 'weight': 1,
                 'color': {  // black
