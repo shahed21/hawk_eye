@@ -11,7 +11,10 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
             headingRadians+= 2* Math.PI;
         }
     }
-    airspeed['mps'] = +(data.airspeed);
+
+    //Airspeed needs a LPF
+    //Using a long IIR filter
+    airspeed['mps'] = + ((0.01) * (data.airspeed)) + ((0.99) * airspeed['mps']);
     airspeed['knots'] = (1.943844) * (airspeed['mps']);
     airspeed['kph'] = (3.6) * (airspeed['mps']);
     airspeed['mph'] = (2.236936) * (airspeed['mps']);
