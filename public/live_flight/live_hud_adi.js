@@ -13,6 +13,12 @@ airspeed['knots'] = 0;
 airspeed['mph'] = 0;
 airspeed['kph'] = 0;
 
+const groundSpeed = {};
+groundSpeed['mps'] = 0;
+groundSpeed['knots'] = 0;
+groundSpeed['mph'] = 0;
+groundSpeed['kph'] = 0;
+
 const altitude = {};
 altitude['meters'] = 0;
 altitude['feet'] = 0;
@@ -181,6 +187,27 @@ function getTicks(axisMin, axisMax, minorMarker, majorMarker, minorMarkers, majo
     while ((majorTickIndex)*(majorMarker) < (axisMax)) {
         majorMarkers.push((majorTickIndex)*(majorMarker));
         majorTickIndex++;
+    }
+}
+
+function showGS(width, height) {
+    if (configDict['hud_adi']['GS']['display']) {
+        const unitChosen = configDict['hud_adi']['GS']['unitChosen'];
+        noFill();
+        strokeWeight(configDict['hud_adi']['GS']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['GS']['stroke']['color']['R'],
+            configDict['hud_adi']['GS']['stroke']['color']['G'],
+            configDict['hud_adi']['GS']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = -(width/2) + configDict['hud_adi']['GS']['xOffset'] + configDict['hud_adi']['ASI']['mainMarkerLength'];
+        const ypos = configDict['hud_adi']['GS']['yOffset'];
+
+        textSize(width*configDict['hud_adi']['GS']['mainTextSizeRatio']);
+        textAlign(LEFT, CENTER);
+        textMessage = groundSpeed[unitChosen].toFixed(1);
+        text(textMessage, xpos, ypos);
     }
 }
 
@@ -870,6 +897,7 @@ function draw() {
         headingDegrees
     );
     drawASI(width, height);
+    showGS(width, height);
     drawAltimeter(width, height);
 
     // keyCheck();

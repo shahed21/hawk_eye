@@ -22,6 +22,12 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     altitude['meters'] = +(data.Alt);
     altitude['feet'] = (3.28084) * (altitude['meters']);
     altitude['yards'] = (altitude['feet'])/3;
+
+    groundSpeed['mps'] = Math.sqrt((data.vel_n) ** 2 +(data.vel_e) ** 2);
+    groundSpeed['knots'] = (1.943844) * (groundSpeed['mps']);
+    groundSpeed['kph'] = (3.6) * (groundSpeed['mps']);
+    groundSpeed['mph'] = (2.236936) * (groundSpeed['mps']);
+
     // const altitudeOffset = +(38);
     // data.alt_corrected = (+(data.alt_corrected)) + (altitudeOffset);
 

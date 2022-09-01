@@ -52,6 +52,21 @@ let configDict = {
                 }
             }
         },
+        'GS': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'mps',
+            'mainTextSizeRatio': 0.03,
+            'xOffset': 30,
+            'yOffset': 30,
+        },
         'ASI': {
             'display': true,
             'stroke': {
