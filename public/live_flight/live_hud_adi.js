@@ -24,6 +24,10 @@ altitude['meters'] = 0;
 altitude['feet'] = 0;
 altitude['yards'] = 0;
 
+const vel_d = {};
+vel_d['mps'] = 0;
+vel_d['fps'] = 0;
+
 let headingDict = {
     0: 'N',
     5: '-',
@@ -193,7 +197,6 @@ function getTicks(axisMin, axisMax, minorMarker, majorMarker, minorMarkers, majo
 function showGS(width, height) {
     if (configDict['hud_adi']['GS']['display']) {
         const unitChosen = configDict['hud_adi']['GS']['unitChosen'];
-        noFill();
         strokeWeight(configDict['hud_adi']['GS']['stroke']['weight']);
         const c = color(
             configDict['hud_adi']['GS']['stroke']['color']['R'],
@@ -201,6 +204,7 @@ function showGS(width, height) {
             configDict['hud_adi']['GS']['stroke']['color']['B']
         );
         stroke(c);
+        fill(c);
         const xpos = -(width/2) + configDict['hud_adi']['GS']['xOffset'] + configDict['hud_adi']['ASI']['mainMarkerLength'];
         const ypos = configDict['hud_adi']['GS']['yOffset'];
 
@@ -273,6 +277,76 @@ function drawASI(width, height) {
                 (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
             );
         });
+    }
+}
+
+
+function drawVSI(width, height) {
+    if (configDict['hud_adi']['VSI']['display']) {
+        const spanRatio = configDict['hud_adi']['VSI']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['VSI']['unitChosen'];
+        const vSpeedSpan = configDict['hud_adi']['VSI']['units'][unitChosen]['vSpeedSpan'];
+        const lowVSpeed = - vSpeedSpan/2;
+        const highVSpeed = + vSpeedSpan/2;
+        const vs = -(vel_d[unitChosen]);
+        const vSpeedMinorTicks = [];
+        const vSpeedMajorTicks = [];
+        getTicks(
+            lowVSpeed,
+            highVSpeed,
+            configDict['hud_adi']['VSI']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['VSI']['units'][unitChosen]['majorMarker'],
+            vSpeedMinorTicks,
+            vSpeedMajorTicks
+        );
+
+        noFill();
+        strokeWeight(configDict['hud_adi']['VSI']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['VSI']['stroke']['color']['R'],
+            configDict['hud_adi']['VSI']['stroke']['color']['G'],
+            configDict['hud_adi']['VSI']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = (width/2) - configDict['hud_adi']['VSI']['xOffset'];
+
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+        fill(c);
+
+        rect(xpos, 0, configDict['hud_adi']['VSI']['majorTickXOffset'], (height/2)*spanRatio - (height)*(spanRatio)*((vs)-(lowVSpeed))/vSpeedSpan);
+        textSize(width*configDict['hud_adi']['VSI']['mainTextSizeRatio']);
+        textAlign(RIGHT, CENTER);
+        textMessage = vs.toFixed(1);
+        text(textMessage, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+
+        // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        // noFill();
+
+
+        vSpeedMinorTicks.forEach(vSpeedMinorTick => {
+            line(
+                xpos + configDict['hud_adi']['VSI']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMinorTick)-(lowVSpeed))/vSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMinorTick)-(lowVSpeed))/vSpeedSpan
+            );            
+        });
+
+        vSpeedMajorTicks.forEach(vSpeedMajorTick => {
+            line(
+                xpos + configDict['hud_adi']['VSI']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan
+            );
+            // text(
+            //     vSpeedMajorTick,
+            //     xpos - configDict['hud_adi']['VSI']['majorTickTextXOffset'],
+            //     (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan
+            // );
+        });
+
     }
 }
 
@@ -841,7 +915,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
     fill('white');
     textSize(diameterCompass*0.04);
     textAlign(CENTER);
-    textMessage = headingDegrees.toFixed(0);
+    textMessage = headingDegrees.toFixed(0) + 'º';
     text(textMessage, 0, - diameterCompass/2 - (1*diameterCompass*0.04));
 }
 
@@ -899,6 +973,7 @@ function draw() {
     drawASI(width, height);
     showGS(width, height);
     drawAltimeter(width, height);
+    drawVSI(width, height);
 
     // keyCheck();
 }

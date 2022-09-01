@@ -56,10 +56,10 @@ let configDict = {
             'display': true,
             'stroke': {
                 'weight': 1,
-                'color': {  // white
-                    'R': 255,
-                    'G': 255,
-                    'B': 255
+                'color': {  // green
+                    'R': 0,
+                    'G': 150,
+                    'B': 0
                 }
             },
             'unitChosen': 'mps',
@@ -106,6 +106,38 @@ let configDict = {
                     'airSpeedSpan': 36,
                     'majorMarker': 5,
                     'minorMarker': 1
+                },
+            }
+        },
+        'VSI': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'mps',
+            'verticalSpanRatio': 0.12,
+            'mainTextSizeRatio': 0.015,
+            'xOffset': 10,
+            'mainMarkerLength': 5,
+            'minorTickXOffset': 5,
+            'majorTickXOffset': 10,
+            'majorTickTextXOffset': 10,
+            'majorTickTextSizeRatio': 0.02,
+            'units': {
+                'mps': {
+                    'vSpeedSpan': 2,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'fps': {
+                    'vSpeedSpan': 6,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
                 },
             }
         },
