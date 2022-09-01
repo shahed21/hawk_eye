@@ -13,6 +13,11 @@ airspeed['knots'] = 0;
 airspeed['mph'] = 0;
 airspeed['kph'] = 0;
 
+const altitude = {};
+altitude['meters'] = 0;
+altitude['feet'] = 0;
+altitude['yards'] = 0;
+
 let headingDict = {
     0: 'N',
     5: '-',
@@ -239,6 +244,71 @@ function drawASI(width, height) {
                 airSpeedMajorTick,
                 xpos + configDict['hud_adi']['ASI']['majorTickTextXOffset'],
                 (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
+            );
+        });
+    }
+}
+
+function drawAltimeter(width, height) {
+    if (configDict['hud_adi']['altimeter']['display']) {
+        const spanRatio = configDict['hud_adi']['altimeter']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['altimeter']['unitChosen'];
+        const altitudeSpan = configDict['hud_adi']['altimeter']['units'][unitChosen]['altitudeSpan'];
+        const lowAltitude = altitude[unitChosen] - altitudeSpan/2;
+        const highAltitude = altitude[unitChosen] + altitudeSpan/2;
+        const altitudeMinorTicks = [];
+        const altitudeMajorTicks = [];
+        getTicks(
+            lowAltitude,
+            highAltitude,
+            configDict['hud_adi']['altimeter']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['altimeter']['units'][unitChosen]['majorMarker'],
+            altitudeMinorTicks,
+            altitudeMajorTicks
+        );
+    
+        noFill();
+        strokeWeight(configDict['hud_adi']['altimeter']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['altimeter']['stroke']['color']['R'],
+            configDict['hud_adi']['altimeter']['stroke']['color']['G'],
+            configDict['hud_adi']['altimeter']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = (width/2) - configDict['hud_adi']['altimeter']['xOffset'];
+
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos - configDict['hud_adi']['altimeter']['xOffset'], 0);
+        fill(c);
+        textSize(width*configDict['hud_adi']['altimeter']['mainTextSizeRatio']);
+        textAlign(RIGHT, CENTER);
+        textMessage = altitude[unitChosen].toFixed(1);
+        text(textMessage, xpos - configDict['hud_adi']['altimeter']['xOffset'], 0);
+
+        textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        noFill();
+
+
+        altitudeMinorTicks.forEach(altitudeMinorTick => {
+            line(
+                xpos + configDict['hud_adi']['altimeter']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMinorTick)-(lowAltitude))/altitudeSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMinorTick)-(lowAltitude))/altitudeSpan
+            );            
+        });
+
+        altitudeMajorTicks.forEach(altitudeMajorTick => {
+            line(
+                xpos + configDict['hud_adi']['altimeter']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan
+            );
+            text(
+                altitudeMajorTick,
+                xpos - configDict['hud_adi']['altimeter']['majorTickTextXOffset'],
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan
             );
         });
     }
@@ -649,7 +719,6 @@ function terrain(diameterADI, rollDeg, pitchDeg, headingDeg) {
     rotate(-radians(rollDeg));
 }
 
-
 function postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees) {
     strokeWeight(1);
     stroke('white');
@@ -663,7 +732,6 @@ function postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegr
     textMessage = "Heading Angle : " + headingDegrees.toFixed(3);
     text(textMessage, diameterCompass/2, diameterCompass/2 - (1*diameterCompass*0.04));
 }
-
 
 function drawCompass(diameterCompass, diameterADI, headingDeg) {
     radiusCompass = diameterCompass/2;
@@ -802,6 +870,7 @@ function draw() {
         headingDegrees
     );
     drawASI(width, height);
+    drawAltimeter(width, height);
 
     // keyCheck();
 }

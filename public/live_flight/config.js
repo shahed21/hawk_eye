@@ -93,6 +93,42 @@ let configDict = {
                 },
             }
         },
+        'altimeter': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'meters',
+            'verticalSpanRatio': 0.6,
+            'mainTextSizeRatio': 0.03,
+            'xOffset': 20,
+            'minorTickXOffset': 5,
+            'majorTickXOffset': 10,
+            'majorTickTextXOffset': 10,
+            'majorTickTextSizeRatio': 0.02,
+            'units': {
+                'meters': {
+                    'altitudeSpan': 10,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'yard': {
+                    'altitudeSpan': 10,
+                    'majorMarker': 1,
+                    'minorMarker': 0.1
+                },
+                'feet': {
+                    'altitudeSpan': 30,
+                    'majorMarker': 3,
+                    'minorMarker': 0.3
+                }
+            }
+        },
         'terrain': {
             'verticalAngleSpan': 60,
             'segments': {
