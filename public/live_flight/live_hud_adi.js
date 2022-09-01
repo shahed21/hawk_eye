@@ -213,12 +213,12 @@ function drawASI(width, height) {
         const xpos = -(width/2) + configDict['hud_adi']['ASI']['xOffset'];
 
         line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
-        line(xpos, 0, xpos + configDict['hud_adi']['ASI']['xOffset'], 0);
+        line(xpos, 0, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
         fill(c);
         textSize(width*configDict['hud_adi']['ASI']['mainTextSizeRatio']);
         textAlign(LEFT, CENTER);
         textMessage = airspeed[unitChosen].toFixed(1);
-        text(textMessage, xpos + configDict['hud_adi']['ASI']['xOffset'], 0);
+        text(textMessage, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
 
         textSize(width*configDict['hud_adi']['ASI']['majorTickTextSizeRatio']);
         noFill();
@@ -278,12 +278,12 @@ function drawAltimeter(width, height) {
         const xpos = (width/2) - configDict['hud_adi']['altimeter']['xOffset'];
 
         line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
-        line(xpos, 0, xpos - configDict['hud_adi']['altimeter']['xOffset'], 0);
+        line(xpos, 0, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
         fill(c);
         textSize(width*configDict['hud_adi']['altimeter']['mainTextSizeRatio']);
         textAlign(RIGHT, CENTER);
         textMessage = altitude[unitChosen].toFixed(1);
-        text(textMessage, xpos - configDict['hud_adi']['altimeter']['xOffset'], 0);
+        text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
 
         textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
         noFill();
