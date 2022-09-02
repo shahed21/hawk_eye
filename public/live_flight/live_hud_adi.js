@@ -36,6 +36,12 @@ const beta = {};
 beta['degrees'] = 0;
 beta['radians'] = 0;
 
+const vel_xyz = {};
+vel_xyz['x'] = 0;
+vel_xyz['y'] = 0;
+vel_xyz['z'] = 0;
+
+
 let headingDict = {
     0: 'N',
     5: '-',
@@ -190,13 +196,13 @@ function drawADIPlane(diameterADI) {
 
 function getTicks(axisMin, axisMax, minorMarker, majorMarker, minorMarkers, majorMarkers) {
     var minorTickIndex = Math.ceil(axisMin/minorMarker);
-    while ((minorTickIndex)*(minorMarker) < (axisMax)) {
+    while ((minorTickIndex)*(minorMarker) <= (axisMax)) {
         minorMarkers.push((minorTickIndex)*(minorMarker));
         minorTickIndex++;
     }
 
     var majorTickIndex = Math.ceil(axisMin/majorMarker);
-    while ((majorTickIndex)*(majorMarker) < (axisMax)) {
+    while ((majorTickIndex)*(majorMarker) <= (axisMax)) {
         majorMarkers.push((majorTickIndex)*(majorMarker));
         majorTickIndex++;
     }
@@ -288,6 +294,74 @@ function drawASI(width, height) {
     }
 }
 
+function drawSlip(width, height) {
+    if (configDict['hud_adi']['slip']['display']) {
+        const spanRatio = configDict['hud_adi']['slip']['horizontalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['slip']['unitChosen'];
+        const slipSpan = configDict['hud_adi']['slip']['units'][unitChosen]['slipSpan'];
+        const lowSlip = - slipSpan/2;
+        const highSlip = + slipSpan/2;
+        const slipAngle = +(beta[unitChosen]);
+        const slipMinorTicks = [];
+        const slipMajorTicks = [];
+        getTicks(
+            lowSlip,
+            highSlip,
+            configDict['hud_adi']['slip']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['slip']['units'][unitChosen]['majorMarker'],
+            slipMinorTicks,
+            slipMajorTicks
+        );
+
+        noFill();
+        strokeWeight(configDict['hud_adi']['slip']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['slip']['stroke']['color']['R'],
+            configDict['hud_adi']['slip']['stroke']['color']['G'],
+            configDict['hud_adi']['slip']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = configDict['hud_adi']['slip']['xOffset'];
+        const ypos = (height/2) - configDict['hud_adi']['slip']['yOffset'];
+
+        line(xpos-(width/2)*spanRatio, ypos, xpos + (width/2)*spanRatio, ypos);
+        // line(xpos, ypos, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+        fill(c);
+
+        rect(xpos, ypos, xpos - (width/2)*spanRatio + (width)*(spanRatio)*((slipAngle)-(lowSlip))/slipSpan, ypos+configDict['hud_adi']['slip']['majorTickXOffset']);
+        textSize(width*configDict['hud_adi']['slip']['mainTextSizeRatio']);
+        textAlign(CENTER, BASELINE);
+        textMessage = slipAngle.toFixed(1) + 'º';
+        text(textMessage, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+
+        // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        // noFill();
+
+
+        slipMinorTicks.forEach(vSpeedMinorTick => {
+            line(
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMinorTick)-(lowSlip))/slipSpan, 
+                ypos + configDict['hud_adi']['slip']['minorTickXOffset'],
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMinorTick)-(lowSlip))/slipSpan, 
+                ypos
+            );            
+        });
+
+        slipMajorTicks.forEach(vSpeedMajorTick => {
+            line(
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan, 
+                ypos + configDict['hud_adi']['slip']['majorTickXOffset'],
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan, 
+                ypos
+            );
+            // text(
+            //     vSpeedMajorTick,
+            //     xpos - configDict['hud_adi']['slip']['majorTickTextXOffset'],
+            //     (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan
+            // );
+        });
+    }
+}
 
 function drawVSI(width, height) {
     if (configDict['hud_adi']['VSI']['display']) {
@@ -392,7 +466,7 @@ function drawAOA(width, height) {
         fill(c);
         textSize(width*configDict['hud_adi']['AOA']['mainTextSizeRatio']);
         textAlign(LEFT, CENTER);
-        textMessage = alpha[unitChosen].toFixed(1);
+        textMessage = alpha[unitChosen].toFixed(1) + 'º';
         text(textMessage, xpos + configDict['hud_adi']['AOA']['mainMarkerLength'], ypos);
 
         textSize(width*configDict['hud_adi']['AOA']['majorTickTextSizeRatio']);
@@ -416,7 +490,7 @@ function drawAOA(width, height) {
                 ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMajorTick)-(lowAlpha))/alphaSpan
             );
             text(
-                alphaMajorTick,
+                alphaMajorTick + 'º',
                 xpos + configDict['hud_adi']['AOA']['majorTickTextXOffset'],
                 ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMajorTick)-(lowAlpha))/alphaSpan
             );
@@ -1027,6 +1101,21 @@ function windowResized() {
     diameterCompass = configDict['hud_adi']['compass']['diameterRatio'] * min(width, height);
 }
 
+function postVelocityBody(width, height) {
+    strokeWeight(1);
+    stroke('white');
+    fill('white');
+    textSize(width*0.04);
+    textAlign(RIGHT);
+    let textMessage = "Vx : " + vel_xyz['x'].toFixed(1);
+    text(textMessage, width/2, height/2 - (3*height*0.04));
+    textMessage = "Vy : " + vel_xyz['y'].toFixed(1);
+    text(textMessage, width/2, height/2 - (2*height*0.04));
+    textMessage = "Vz : " + vel_xyz['z'].toFixed(1);
+    text(textMessage, width/2, height/2 - (1*height*0.04));
+}
+
+
 function draw() {
     background(50);
     translate(width/2, height/2);
@@ -1049,6 +1138,8 @@ function draw() {
     drawVSI(width, height);
 
     drawAOA(width, height);
+    drawSlip(width, height);
 
+    postVelocityBody(width, height);
     // keyCheck();
 }

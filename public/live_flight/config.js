@@ -146,6 +146,39 @@ let configDict = {
                 },
             }
         },
+        'slip': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'degrees',
+            'horizontalSpanRatio': 0.12,
+            'mainTextSizeRatio': 0.015,
+            'xOffset': 0,
+            'yOffset': 30,
+            'mainMarkerLength': 5,
+            'minorTickXOffset': 5,
+            'majorTickXOffset': 10,
+            'majorTickTextXOffset': 10,
+            'majorTickTextSizeRatio': 0.02,
+            'units': {
+                'degrees': {
+                    'slipSpan': 20,
+                    'majorMarker': 5,
+                    'minorMarker': 1
+                },
+                'radians': {
+                    'slipSpan': 0.4,
+                    'majorMarker': 0.1,
+                    'minorMarker': 0.02
+                },
+            }
+        },
         'AOA': {
             'display': true,
             'stroke': {
@@ -161,7 +194,7 @@ let configDict = {
             'mainTextSizeRatio': 0.02,
             'xOffset': 100,
             'yOffset': 230,
-            'mainMarkerLength': 30,
+            'mainMarkerLength': 40,
             'minorTickXOffset': 5,
             'majorTickXOffset': 10,
             'majorTickTextXOffset': 10,
