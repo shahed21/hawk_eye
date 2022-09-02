@@ -71,10 +71,15 @@ let configDict = {
             'display': true,
             'stroke': {
                 'weight': 1,
-                'color': {  // white
-                    'R': 255,
-                    'G': 255,
-                    'B': 255
+                // 'color': {  // white
+                //     'R': 255,
+                //     'G': 255,
+                //     'B': 255
+                // }
+                'color': { // sky
+                    'R': 135,
+                    'G': 206,
+                    'B': 235
                 }
             },
             'unitChosen': 'mps',
@@ -130,14 +135,14 @@ let configDict = {
             'majorTickTextSizeRatio': 0.02,
             'units': {
                 'mps': {
-                    'vSpeedSpan': 2,
-                    'majorMarker': 1,
-                    'minorMarker': 0.1
-                },
-                'fps': {
                     'vSpeedSpan': 6,
                     'majorMarker': 1,
-                    'minorMarker': 0.1
+                    'minorMarker': 0.25
+                },
+                'fps': {
+                    'vSpeedSpan': 18,
+                    'majorMarker': 3,
+                    'minorMarker': 0.5
                 },
             }
         },

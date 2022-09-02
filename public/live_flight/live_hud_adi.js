@@ -530,6 +530,13 @@ function drawTopCompass(compassWidth, compassDepth, headingDeg) {
                 }
             }
         }
+        strokeWeight(1);
+        stroke('white');
+        fill('white');
+        textSize(compassWidth*0.08);
+        textAlign(CENTER);
+        textMessage = headingDeg.toFixed(0) + 'º';
+        text(textMessage, 0, compassDepth + 40);    
     }
 }
 
@@ -909,14 +916,6 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
         }
     }
     rotate(radians(-headingDeg));
-
-    strokeWeight(1);
-    stroke('white');
-    fill('white');
-    textSize(diameterCompass*0.04);
-    textAlign(CENTER);
-    textMessage = headingDegrees.toFixed(0) + 'º';
-    text(textMessage, 0, - diameterCompass/2 - (1*diameterCompass*0.04));
 }
 
 function dataCheck() {
