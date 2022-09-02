@@ -146,6 +146,39 @@ let configDict = {
                 },
             }
         },
+        'AOA': {
+            'display': true,
+            'stroke': {
+                'weight': 1,
+                'color': {  // white
+                    'R': 255,
+                    'G': 255,
+                    'B': 255
+                }
+            },
+            'unitChosen': 'degrees',
+            'verticalSpanRatio': 0.2,
+            'mainTextSizeRatio': 0.02,
+            'xOffset': 100,
+            'yOffset': 230,
+            'mainMarkerLength': 30,
+            'minorTickXOffset': 5,
+            'majorTickXOffset': 10,
+            'majorTickTextXOffset': 10,
+            'majorTickTextSizeRatio': 0.015,
+            'units': {
+                'degrees': {
+                    'alphaSpan': 60,
+                    'majorMarker': 15,
+                    'minorMarker': 5
+                },
+                'radians': {
+                    'alphaSpan': 1,
+                    'majorMarker': 0.2,
+                    'minorMarker': 0.01
+                }
+            }
+        },
         'altimeter': {
             'display': true,
             'stroke': {

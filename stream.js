@@ -53,6 +53,33 @@ function setupServer(jsonData) {
     });
 }
 
+alpha_filter = 0;
+beta_filter = 0;
+
+function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
+  // (cos(p) cos(y) | sin(p) sin(r) cos(y) + cos(r) sin(y) | sin(r) sin(y) - sin(p) cos(r) cos(y)
+  // -cos(p) sin(y) | cos(r) cos(y) - sin(p) sin(r) sin(y) | sin(p) cos(r) sin(y) + sin(r) cos(y)
+  // sin(p) | -cos(p) sin(r) | cos(p) cos(r))
+
+  rowData['vel_x'] = Math.cos(p) * Math.cos(y) * (vel_n) + (Math.sin(p) * Math.sin(r) * Math.cos(y) + Math.cos(r) * Math.sin(y)) * (vel_e) + (Math.sin(r) * Math.sin(y) - Math.sin(p) * Math.cos(r) * Math.cos(y)) * (vel_d);
+  rowData['vel_y'] = -Math.cos(p) * Math.sin(y) * (vel_n) + (Math.cos(r) * Math.cos(y) - Math.sin(p) * Math.sin(r) * Math.sin(y)) * (vel_e) + (Math.sin(p) * Math.cos(r) * Math.sin(y) + Math.sin(r) * Math.cos(y)) * (vel_d);
+  rowData['vel_z'] = Math.sin(p) * (vel_n) + -Math.cos(p) * Math.sin(r) * (vel_e) + Math.cos(p) * Math.cos(r) * (vel_d);
+  rowData['vel'] = Math.sqrt((rowData['vel_x'])**2 + (rowData['vel_y'])**2 + (rowData['vel_z'])**2);
+  
+  // Angle of Attack
+  alpha_filter = 0.03 * Math.atan2((rowData['vel_z']), (rowData['vel_x'])) + 0.97 * alpha_filter;
+
+  // Slip Angle
+  beta_filter = 0.03 * Math.asin((rowData['vel_z'])/(rowData['vel'])) + 0.97 * beta_filter;
+
+  if ((rowData['vel']) < 0.3) {
+    alpha_filter = 0;
+    beta_filter = 0;
+  }
+
+  rowData['alpha'] = alpha_filter;
+  rowData['beta'] = beta_filter;
+}
 
 fs.createReadStream(csvFilePath)
   .pipe(parse({ delimiter: ',' }))
@@ -76,6 +103,16 @@ fs.createReadStream(csvFilePath)
             });
 
             //This is where we should add more data
+            getVel_b_alpha_beta(
+              rowData,
+              rowData['euler0'],
+              rowData['euler1'],
+              rowData['euler2'],
+              rowData['vel_n'],
+              rowData['vel_e'],
+              rowData['vel_d'],
+            );
+
             jsonData.push(rowData);
         }
         index++;

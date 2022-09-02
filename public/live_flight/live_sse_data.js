@@ -1,6 +1,6 @@
 function updateFlightData(jsondata, positionProperty, orientationProperty) {
     const data = JSON.parse(jsondata);
-    rollDegrees = -data.euler0 * (180/Math.PI);
+    rollDegrees = -(data.euler0) * (180/Math.PI);
     pitchDegrees = data.euler1 * (180/Math.PI);
     headingDegrees = data.euler2 * (180/Math.PI);
     headingRadians =  (data.euler2-(Math.PI/2));
@@ -11,6 +11,12 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
             headingRadians+= 2* Math.PI;
         }
     }
+
+    alpha['degrees'] = (data.alpha) * (180/Math.PI);
+    beta['degrees'] = (data.beta) * (180/Math.PI);
+
+    alpha['radians'] = (data.alpha);
+    beta['radians'] = (data.beta);
 
     //Airspeed needs a LPF
     //Using a long IIR filter
