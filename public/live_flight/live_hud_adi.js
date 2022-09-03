@@ -37,6 +37,7 @@ beta['degrees'] = 0;
 beta['radians'] = 0;
 
 const vel_xyz = {};
+vel_xyz['0'] = 0;
 vel_xyz['x'] = 0;
 vel_xyz['y'] = 0;
 vel_xyz['z'] = 0;
@@ -1105,14 +1106,16 @@ function postVelocityBody(width, height) {
     strokeWeight(1);
     stroke('white');
     fill('white');
-    textSize(width*0.04);
+    textSize(width*0.03);
     textAlign(RIGHT);
-    let textMessage = "Vx : " + vel_xyz['x'].toFixed(1);
-    text(textMessage, width/2, height/2 - (3*height*0.04));
+    let textMessage = "V0 : " + vel_xyz['0'].toFixed(1);
+    text(textMessage, width/2, height/2 - (4*height*0.03));
+    textMessage = "Vx : " + vel_xyz['x'].toFixed(1);
+    text(textMessage, width/2, height/2 - (3*height*0.03));
     textMessage = "Vy : " + vel_xyz['y'].toFixed(1);
-    text(textMessage, width/2, height/2 - (2*height*0.04));
+    text(textMessage, width/2, height/2 - (2*height*0.03));
     textMessage = "Vz : " + vel_xyz['z'].toFixed(1);
-    text(textMessage, width/2, height/2 - (1*height*0.04));
+    text(textMessage, width/2, height/2 - (1*height*0.03));
 }
 
 
@@ -1140,6 +1143,6 @@ function draw() {
     drawAOA(width, height);
     drawSlip(width, height);
 
-    postVelocityBody(width, height);
+    // postVelocityBody(width, height);
     // keyCheck();
 }

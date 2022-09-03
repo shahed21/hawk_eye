@@ -13,7 +13,7 @@ var jsonDataIndex = 1;
 function prepareMessage(res, jsonData, startTime) {
   const currTime = Date.now();
   while( (parseInt( jsonData[jsonDataIndex].DeltaTimeMS )) <= ( currTime - startTime )) {
-  // while( (parseInt( jsonData[jsonDataIndex].DeltaTimeMS )-(450020)) <= ( currTime - startTime )) {
+  // while( (parseInt( jsonData[jsonDataIndex].DeltaTimeMS )-(440020)) <= ( currTime - startTime )) {
     res.write( `data: ${ JSON.stringify( jsonData[jsonDataIndex] ) }\n\n` );
     jsonDataIndex++;
   }
@@ -72,7 +72,7 @@ function conjugate(q, conj) {
   conj[3] = -q[3];
 }
 
-function getVel_b_alpha_beta_quat(rowData) {
+function getVel_b_alpha_beta_quat_star(rowData) {
   q = [rowData['Q0'], rowData['Q1'], rowData['Q2'], rowData['Q3']];
   vel_ned = [0, rowData['vel_n'], rowData['vel_e'], rowData['vel_d']];
   qstar = [];
@@ -82,6 +82,39 @@ function getVel_b_alpha_beta_quat(rowData) {
   vel_xyz = [];
   hamilton(mid_level, qstar, vel_xyz);
 
+  rowData['vel_0'] = vel_xyz[0];
+  rowData['vel_x'] = vel_xyz[1];
+  rowData['vel_y'] = vel_xyz[2];
+  rowData['vel_z'] = vel_xyz[3];
+
+  rowData['vel'] = Math.sqrt((rowData['vel_x'])**2 + (rowData['vel_y'])**2 + (rowData['vel_z'])**2);
+
+  // Angle of Attack
+  alpha_filter = 0.03 * Math.atan2((rowData['vel_z']), (rowData['vel_x'])) + 0.97 * alpha_filter;
+
+  // Slip Angle
+  beta_filter = 0.03 * Math.asin((rowData['vel_y'])/(rowData['vel'])) + 0.97 * beta_filter;
+
+  if ((rowData['vel']) < 0.3) {
+    alpha_filter = 0;
+    beta_filter = 0;
+  }
+
+  rowData['alpha'] = alpha_filter;
+  rowData['beta'] = beta_filter;
+}
+
+function getVel_b_alpha_beta_quat(rowData) {
+  q = [rowData['Q0'], rowData['Q1'], rowData['Q2'], rowData['Q3']];
+  vel_ned = [0, rowData['vel_n'], rowData['vel_e'], rowData['vel_d']];
+  qstar = [];
+  conjugate(q, qstar);
+  mid_level = [];
+  hamilton(qstar, vel_ned, mid_level);
+  vel_xyz = [];
+  hamilton(mid_level, q, vel_xyz);
+
+  rowData['vel_0'] = vel_xyz[0];
   rowData['vel_x'] = vel_xyz[1];
   rowData['vel_y'] = vel_xyz[2];
   rowData['vel_z'] = vel_xyz[3];

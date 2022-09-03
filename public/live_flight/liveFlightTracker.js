@@ -4,9 +4,9 @@ const viewer = new Cesium.Viewer('cesiumContainer', {
 const buildingTileset = viewer.scene.primitives.add(Cesium.createOsmBuildings());
 
 const totalMinutes = 80;
-// const totalMinutes = 80 - (7.516666666);
+// const totalMinutes = 80 - (7.35);
 const start = Cesium.JulianDate.fromIso8601("1970-01-12T14:10:59Z");
-// const start = Cesium.JulianDate.fromIso8601("1970-01-12T14:18:30Z");
+// const start = Cesium.JulianDate.fromIso8601("1970-01-12T14:18:20Z");
 const stop = Cesium.JulianDate.addMinutes(start, totalMinutes, new Cesium.JulianDate());
 viewer.clock.startTime = start.clone();
 viewer.clock.stopTime = stop.clone();

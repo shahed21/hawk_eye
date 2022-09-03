@@ -37,6 +37,7 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     vel_d['mps'] = + ( data.vel_d );
     vel_d['fps'] = (3.28084) * (vel_d['mps']);
 
+    vel_xyz['0'] = data.vel_0;
     vel_xyz['x'] = data.vel_x;
     vel_xyz['y'] = data.vel_y;
     vel_xyz['z'] = data.vel_z;
