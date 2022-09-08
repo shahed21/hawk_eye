@@ -1,8 +1,47 @@
 let diameterADI = 0;
 let diameterCompass = 0;
+
+// Attitube Angles In Degrees
 var rollDegrees = 0;
 var pitchDegrees = 0;
 var headingDegrees = 0;
+
+// Airspeeds in different units
+const airspeed = {};
+airspeed['mps'] = 0;
+airspeed['knots'] = 0;
+airspeed['mph'] = 0;
+airspeed['kph'] = 0;
+
+const groundSpeed = {};
+groundSpeed['mps'] = 0;
+groundSpeed['knots'] = 0;
+groundSpeed['mph'] = 0;
+groundSpeed['kph'] = 0;
+
+const altitude = {};
+altitude['meters'] = 0;
+altitude['feet'] = 0;
+altitude['yards'] = 0;
+
+const vel_d = {};
+vel_d['mps'] = 0;
+vel_d['fps'] = 0;
+
+const alpha = {};
+alpha['degrees'] = 0;
+alpha['radians'] = 0;
+
+const beta = {};
+beta['degrees'] = 0;
+beta['radians'] = 0;
+
+const vel_xyz = {};
+vel_xyz['0'] = 0;
+vel_xyz['x'] = 0;
+vel_xyz['y'] = 0;
+vel_xyz['z'] = 0;
+
 
 let headingDict = {
     0: 'N',
@@ -156,6 +195,499 @@ function drawADIPlane(diameterADI) {
         configDict['hud_adi']['ADIPlane']['wings']['tipHeightToRadiusRatio'] * r);
 }
 
+function getTicks(axisMin, axisMax, minorMarker, majorMarker, minorMarkers, majorMarkers) {
+    var minorTickIndex = Math.ceil(axisMin/minorMarker);
+    while ((minorTickIndex)*(minorMarker) <= (axisMax)) {
+        minorMarkers.push((minorTickIndex)*(minorMarker));
+        minorTickIndex++;
+    }
+
+    var majorTickIndex = Math.ceil(axisMin/majorMarker);
+    while ((majorTickIndex)*(majorMarker) <= (axisMax)) {
+        majorMarkers.push((majorTickIndex)*(majorMarker));
+        majorTickIndex++;
+    }
+}
+
+function showGS(width, height) {
+    if (configDict['hud_adi']['GS']['display']) {
+        const unitChosen = configDict['hud_adi']['GS']['unitChosen'];
+        strokeWeight(configDict['hud_adi']['GS']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['GS']['stroke']['color']['R'],
+            configDict['hud_adi']['GS']['stroke']['color']['G'],
+            configDict['hud_adi']['GS']['stroke']['color']['B']
+        );
+        stroke(c);
+        fill(c);
+        const xpos = -(width/2) + configDict['hud_adi']['GS']['xOffset'] + configDict['hud_adi']['ASI']['mainMarkerLength'];
+        const ypos = configDict['hud_adi']['GS']['yOffset'];
+
+        textSize(width*configDict['hud_adi']['GS']['mainTextSizeRatio']);
+        textAlign(LEFT, CENTER);
+        textMessage = groundSpeed[unitChosen].toFixed(1);
+        text(textMessage, xpos, ypos);
+    }
+}
+
+function drawASI(width, height) {
+    if (configDict['hud_adi']['ASI']['display']) {
+        const spanRatio = configDict['hud_adi']['ASI']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['ASI']['unitChosen'];
+        const airSpeedSpan = configDict['hud_adi']['ASI']['units'][unitChosen]['airSpeedSpan'];
+        const lowAirspeed = airspeed[unitChosen] - airSpeedSpan/2;
+        const highAirspeed = airspeed[unitChosen] + airSpeedSpan/2;
+        const airSpeedMinorTicks = [];
+        const airSpeedMajorTicks = [];
+        getTicks(
+            lowAirspeed,
+            highAirspeed,
+            configDict['hud_adi']['ASI']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['ASI']['units'][unitChosen]['majorMarker'],
+            airSpeedMinorTicks,
+            airSpeedMajorTicks
+        );
+    
+        noFill();
+        strokeWeight(configDict['hud_adi']['ASI']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['ASI']['stroke']['color']['R'],
+            configDict['hud_adi']['ASI']['stroke']['color']['G'],
+            configDict['hud_adi']['ASI']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = -(width/2) + configDict['hud_adi']['ASI']['xOffset'];
+
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
+        fill(c);
+        textSize(width*configDict['hud_adi']['ASI']['mainTextSizeRatio']);
+        textAlign(LEFT, CENTER);
+        textMessage = airspeed[unitChosen].toFixed(1);
+        text(textMessage, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
+
+        textSize(width*configDict['hud_adi']['ASI']['majorTickTextSizeRatio']);
+        noFill();
+
+
+        airSpeedMinorTicks.forEach(airSpeedMinorTick => {
+            line(
+                xpos - configDict['hud_adi']['ASI']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMinorTick)-(lowAirspeed))/airSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMinorTick)-(lowAirspeed))/airSpeedSpan
+            );            
+        });
+
+        airSpeedMajorTicks.forEach(airSpeedMajorTick => {
+            line(
+                xpos - configDict['hud_adi']['ASI']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
+            );
+            text(
+                airSpeedMajorTick,
+                xpos + configDict['hud_adi']['ASI']['majorTickTextXOffset'],
+                (height/2)*spanRatio - (height)*(spanRatio)*((airSpeedMajorTick)-(lowAirspeed))/airSpeedSpan
+            );
+        });
+    }
+}
+
+function drawSlip(width, height) {
+    if (configDict['hud_adi']['slip']['display']) {
+        const spanRatio = configDict['hud_adi']['slip']['horizontalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['slip']['unitChosen'];
+        const slipSpan = configDict['hud_adi']['slip']['units'][unitChosen]['slipSpan'];
+        const lowSlip = - slipSpan/2;
+        const highSlip = + slipSpan/2;
+        const slipAngle = +(beta[unitChosen]);
+        const slipMinorTicks = [];
+        const slipMajorTicks = [];
+        getTicks(
+            lowSlip,
+            highSlip,
+            configDict['hud_adi']['slip']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['slip']['units'][unitChosen]['majorMarker'],
+            slipMinorTicks,
+            slipMajorTicks
+        );
+
+        noFill();
+        strokeWeight(configDict['hud_adi']['slip']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['slip']['stroke']['color']['R'],
+            configDict['hud_adi']['slip']['stroke']['color']['G'],
+            configDict['hud_adi']['slip']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = configDict['hud_adi']['slip']['xOffset'];
+        const ypos = (height/2) - configDict['hud_adi']['slip']['yOffset'];
+
+        line(xpos-(width/2)*spanRatio, ypos, xpos + (width/2)*spanRatio, ypos);
+        // line(xpos, ypos, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+        fill(c);
+
+        rect(xpos, ypos, xpos - (width/2)*spanRatio + (width)*(spanRatio)*((slipAngle)-(lowSlip))/slipSpan, ypos+configDict['hud_adi']['slip']['majorTickXOffset']);
+        textSize(width*configDict['hud_adi']['slip']['mainTextSizeRatio']);
+        textAlign(CENTER, BASELINE);
+        textMessage = slipAngle.toFixed(1) + 'º';
+        text(textMessage, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+
+        // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        // noFill();
+
+
+        slipMinorTicks.forEach(vSpeedMinorTick => {
+            line(
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMinorTick)-(lowSlip))/slipSpan, 
+                ypos + configDict['hud_adi']['slip']['minorTickXOffset'],
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMinorTick)-(lowSlip))/slipSpan, 
+                ypos
+            );            
+        });
+
+        slipMajorTicks.forEach(vSpeedMajorTick => {
+            line(
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan, 
+                ypos + configDict['hud_adi']['slip']['majorTickXOffset'],
+                xpos - (height/2)*spanRatio + (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan, 
+                ypos
+            );
+            // text(
+            //     vSpeedMajorTick,
+            //     xpos - configDict['hud_adi']['slip']['majorTickTextXOffset'],
+            //     (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowSlip))/slipSpan
+            // );
+        });
+    }
+}
+
+function drawVSI(width, height) {
+    if (configDict['hud_adi']['VSI']['display']) {
+        const spanRatio = configDict['hud_adi']['VSI']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['VSI']['unitChosen'];
+        const vSpeedSpan = configDict['hud_adi']['VSI']['units'][unitChosen]['vSpeedSpan'];
+        const lowVSpeed = - vSpeedSpan/2;
+        const highVSpeed = + vSpeedSpan/2;
+        const vs = -(vel_d[unitChosen]);
+        const vSpeedMinorTicks = [];
+        const vSpeedMajorTicks = [];
+        getTicks(
+            lowVSpeed,
+            highVSpeed,
+            configDict['hud_adi']['VSI']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['VSI']['units'][unitChosen]['majorMarker'],
+            vSpeedMinorTicks,
+            vSpeedMajorTicks
+        );
+
+        noFill();
+        strokeWeight(configDict['hud_adi']['VSI']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['VSI']['stroke']['color']['R'],
+            configDict['hud_adi']['VSI']['stroke']['color']['G'],
+            configDict['hud_adi']['VSI']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = (width/2) - configDict['hud_adi']['VSI']['xOffset'];
+
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+        fill(c);
+
+        rect(xpos, 0, configDict['hud_adi']['VSI']['majorTickXOffset'], (height/2)*spanRatio - (height)*(spanRatio)*((vs)-(lowVSpeed))/vSpeedSpan);
+        textSize(width*configDict['hud_adi']['VSI']['mainTextSizeRatio']);
+        textAlign(RIGHT, CENTER);
+        textMessage = vs.toFixed(1);
+        text(textMessage, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+
+        // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        // noFill();
+
+
+        vSpeedMinorTicks.forEach(vSpeedMinorTick => {
+            line(
+                xpos + configDict['hud_adi']['VSI']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMinorTick)-(lowVSpeed))/vSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMinorTick)-(lowVSpeed))/vSpeedSpan
+            );            
+        });
+
+        vSpeedMajorTicks.forEach(vSpeedMajorTick => {
+            line(
+                xpos + configDict['hud_adi']['VSI']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan
+            );
+            // text(
+            //     vSpeedMajorTick,
+            //     xpos - configDict['hud_adi']['VSI']['majorTickTextXOffset'],
+            //     (height/2)*spanRatio - (height)*(spanRatio)*((vSpeedMajorTick)-(lowVSpeed))/vSpeedSpan
+            // );
+        });
+
+    }
+}
+
+function drawAOA(width, height) {
+    if (configDict['hud_adi']['AOA']['display']) {
+        const spanRatio = configDict['hud_adi']['AOA']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['AOA']['unitChosen'];
+        const alphaSpan = configDict['hud_adi']['AOA']['units'][unitChosen]['alphaSpan'];
+        const lowAlpha = alpha[unitChosen] - alphaSpan/2;
+        const highAlpha = alpha[unitChosen] + alphaSpan/2;
+        const alphaMinorTicks = [];
+        const alphaMajorTicks = [];
+        getTicks(
+            lowAlpha,
+            highAlpha,
+            configDict['hud_adi']['AOA']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['AOA']['units'][unitChosen]['majorMarker'],
+            alphaMinorTicks,
+            alphaMajorTicks
+        );
+    
+        noFill();
+        strokeWeight(configDict['hud_adi']['AOA']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['AOA']['stroke']['color']['R'],
+            configDict['hud_adi']['AOA']['stroke']['color']['G'],
+            configDict['hud_adi']['AOA']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = -((width)/2) + configDict['hud_adi']['AOA']['xOffset'];
+        const ypos = -((height)/2) + configDict['hud_adi']['AOA']['yOffset'];
+
+        line(xpos, ypos-(height/2)*spanRatio, xpos, ypos+(height/2)*spanRatio);
+        line(xpos, ypos, xpos + configDict['hud_adi']['AOA']['mainMarkerLength'], ypos);
+        fill(c);
+        textSize(width*configDict['hud_adi']['AOA']['mainTextSizeRatio']);
+        textAlign(LEFT, CENTER);
+        textMessage = alpha[unitChosen].toFixed(1) + 'º';
+        text(textMessage, xpos + configDict['hud_adi']['AOA']['mainMarkerLength'], ypos);
+
+        textSize(width*configDict['hud_adi']['AOA']['majorTickTextSizeRatio']);
+        noFill();
+
+
+        alphaMinorTicks.forEach(alphaMinorTick => {
+            line(
+                xpos - configDict['hud_adi']['AOA']['minorTickXOffset'], 
+                ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMinorTick)-(lowAlpha))/alphaSpan,
+                xpos, 
+                ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMinorTick)-(lowAlpha))/alphaSpan
+            );            
+        });
+
+        alphaMajorTicks.forEach(alphaMajorTick => {
+            line(
+                xpos - configDict['hud_adi']['AOA']['majorTickXOffset'], 
+                ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMajorTick)-(lowAlpha))/alphaSpan,
+                xpos, 
+                ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMajorTick)-(lowAlpha))/alphaSpan
+            );
+            text(
+                alphaMajorTick + 'º',
+                xpos + configDict['hud_adi']['AOA']['majorTickTextXOffset'],
+                ypos + (height/2)*spanRatio - (height)*(spanRatio)*((alphaMajorTick)-(lowAlpha))/alphaSpan
+            );
+        });
+    }
+}
+
+function drawAltimeter(width, height) {
+    if (configDict['hud_adi']['altimeter']['display']) {
+        const spanRatio = configDict['hud_adi']['altimeter']['verticalSpanRatio'];
+        const unitChosen = configDict['hud_adi']['altimeter']['unitChosen'];
+        const altitudeSpan = configDict['hud_adi']['altimeter']['units'][unitChosen]['altitudeSpan'];
+        const lowAltitude = altitude[unitChosen] - altitudeSpan/2;
+        const highAltitude = altitude[unitChosen] + altitudeSpan/2;
+        const altitudeMinorTicks = [];
+        const altitudeMajorTicks = [];
+        getTicks(
+            lowAltitude,
+            highAltitude,
+            configDict['hud_adi']['altimeter']['units'][unitChosen]['minorMarker'],
+            configDict['hud_adi']['altimeter']['units'][unitChosen]['majorMarker'],
+            altitudeMinorTicks,
+            altitudeMajorTicks
+        );
+    
+        noFill();
+        strokeWeight(configDict['hud_adi']['altimeter']['stroke']['weight']);
+        const c = color(
+            configDict['hud_adi']['altimeter']['stroke']['color']['R'],
+            configDict['hud_adi']['altimeter']['stroke']['color']['G'],
+            configDict['hud_adi']['altimeter']['stroke']['color']['B']
+        );
+        stroke(c);
+        const xpos = (width/2) - configDict['hud_adi']['altimeter']['xOffset'];
+
+        line(xpos, -(height/2)*spanRatio, xpos, (height/2)*spanRatio);
+        line(xpos, 0, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
+        fill(c);
+        textSize(width*configDict['hud_adi']['altimeter']['mainTextSizeRatio']);
+        textAlign(RIGHT, CENTER);
+        textMessage = altitude[unitChosen].toFixed(1);
+        text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
+
+        textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
+        noFill();
+
+
+        altitudeMinorTicks.forEach(altitudeMinorTick => {
+            line(
+                xpos + configDict['hud_adi']['altimeter']['minorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMinorTick)-(lowAltitude))/altitudeSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMinorTick)-(lowAltitude))/altitudeSpan
+            );            
+        });
+
+        altitudeMajorTicks.forEach(altitudeMajorTick => {
+            line(
+                xpos + configDict['hud_adi']['altimeter']['majorTickXOffset'], 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan,
+                xpos, 
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan
+            );
+            text(
+                altitudeMajorTick,
+                xpos - configDict['hud_adi']['altimeter']['majorTickTextXOffset'],
+                (height/2)*spanRatio - (height)*(spanRatio)*((altitudeMajorTick)-(lowAltitude))/altitudeSpan
+            );
+        });
+    }
+}
+
+function drawTopCompass(compassWidth, compassDepth, headingDeg) {
+    if (configDict['hud_adi']['topCompass']['display']) {
+        let spanRatio = configDict['hud_adi']['topCompass']['horizontalSpanRatio'];
+        // console.log(`Came Here`);
+    
+        let horizontalHalfSpanAngle = configDict['hud_adi']['topCompass']['horizontalSpanAngle']/2;
+        noFill();
+        strokeWeight(configDict['hud_adi']['topCompass']['stroke']['weight']);
+        let c = color(
+            configDict['hud_adi']['topCompass']['stroke']['color']['R'],
+            configDict['hud_adi']['topCompass']['stroke']['color']['G'],
+            configDict['hud_adi']['topCompass']['stroke']['color']['B']
+        );
+        stroke(c);
+    
+        line(-(compassWidth) * spanRatio,
+            compassDepth,
+            (compassWidth) * spanRatio,
+            compassDepth
+        );
+        
+        line(0,
+            compassDepth - compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax'],
+            0,
+            compassDepth
+        );
+    
+        for (let key in headingDict) {
+            if (headingDeg<horizontalHalfSpanAngle) {
+                if (((key-360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((key-360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                    let x_pos = (headingDeg - (key-360)) * compassWidth / horizontalHalfSpanAngle;
+                    // print(x_pos);
+                    switch (headingDict[key]) {
+                        case '-':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
+                            break;
+                        case '|':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
+                            break;
+                        default:
+                            textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
+                            fill(c);
+                            textAlign(CENTER, BASELINE);
+                            text(headingDict[key],
+                                x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
+                    }
+                }
+            }
+            if (headingDeg>(360-horizontalHalfSpanAngle)) {
+                if (((parseInt(key)+360) < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&((parseInt(key)+360) > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                    let x_pos = (headingDeg - (parseInt(key)+360)) * compassWidth / horizontalHalfSpanAngle;
+                    // print(x_pos);
+                    switch (headingDict[key]) {
+                        case '-':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
+                            break;
+                        case '|':
+                            line(
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
+                                x_pos,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
+                            break;
+                        default:
+                            textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
+                            fill(c);
+                            textAlign(CENTER, BASELINE);
+                            text(headingDict[key],
+                                x_pos + (compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
+                                compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
+                    }
+                }
+            }
+            if ((key < headingDeg + (horizontalHalfSpanAngle * spanRatio))&&(key > headingDeg - (horizontalHalfSpanAngle * spanRatio))) {
+                // console.log(key);
+                // console.log(headingDeg);
+                let x_pos = (headingDeg - (key)) * compassWidth / horizontalHalfSpanAngle;
+                switch (headingDict[key]) {
+                    case '-':
+                        line(
+                            x_pos,
+                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMin'],
+                            x_pos,
+                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['-']['radiusRatioMax']);
+                        break;
+                    case '|':
+                        line(
+                            x_pos,
+                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMin'],
+                            x_pos,
+                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['|']['radiusRatioMax']);
+                        break;
+                    default:
+                        textSize(compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
+                        fill(c);
+                        textAlign(CENTER, BASELINE);
+                        text(headingDict[key],
+                            x_pos + (compassWidth*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
+                            compassDepth + compassWidth * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
+                }
+            }
+        }
+        strokeWeight(1);
+        stroke('white');
+        fill('white');
+        textSize(compassWidth*0.08);
+        textAlign(CENTER);
+        textMessage = headingDeg.toFixed(0) + 'º';
+        text(textMessage, 0, compassDepth + 40);  // TODO needs to be in config
+    }
+}
 
 function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
     let spanRatio = configDict['hud_adi']['terrainCompass']['horizontalSpanRatio'];
@@ -196,6 +728,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                     default:
                         textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
+                        textAlign(CENTER, BASELINE);
                         text(headingDict[key],
                             x_pos + (radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                             horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -224,6 +757,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                     default:
                         textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                         fill(c);
+                        textAlign(CENTER, BASELINE);
                         text(headingDict[key],
                             x_pos + (radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']) / 2,
                             horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -250,6 +784,7 @@ function drawTerrainCompass(radius, horizonDipDepth, headingDeg) {
                 default:
                     textSize(radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio']);
                     fill(c);
+                    textAlign(CENTER, BASELINE);
                     text(headingDict[key],
                         x_pos + (radius*configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['textSizeToRadiusRatio'])/2,
                         horizonDipDepth + radius * configDict['hud_adi']['terrainCompass']['scaleMarkers']['text']['verticalDepthToRadiusRatio']);
@@ -361,7 +896,24 @@ function drawPitchLines(radius, diameterADI) {
                 -radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'],
                 configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan'],
                 radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'],
-                configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex]*diameterADI/configDict['hud_adi']['pitchLines']['pitchAngleSpan']);
+                configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+            );
+
+            if (lineTypeIndex===0) {
+                textSize(radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['textSizeRatio']);
+                stroke(c);
+                fill(c);
+                textAlign(LEFT, CENTER);
+                text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
+                    radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] + 5,
+                    configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+                );
+                textAlign(RIGHT, CENTER);
+                text(configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex],
+                    -radius * configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['radiusRatio'] - 5,
+                    configDict['hud_adi']['pitchLines']['lineType'][lineTypeIndex]['angles'][angleIndex] * diameterADI / configDict['hud_adi']['pitchLines']['pitchAngleSpan']
+                );
+            }
         }
     }
 }
@@ -384,24 +936,38 @@ function terrain(diameterADI, rollDeg, pitchDeg, headingDeg) {
         configDict['hud_adi']['terrain']['segments']['ground']['color']['B']);
 
     let colors = [ground, sky];
-    for (let i = 0; i < segmentAngles.length; i++) {
-        fill(colors[i]);
-        arc(
-            0,
-            0,
-            diameterADI,
-            diameterADI,
-            radians(segmentAngles[i]),
-            radians(segmentAngles[(i+1)%(segmentAngles.length)]),
-            OPEN
-        );
+    if (pitchDeg>configDict['hud_adi']['pitchLines']['pitchAngleSpan']/2) {
+        fill(sky);
+        circle(0,0, diameterADI);
+    } else {
+        if (pitchDeg<-configDict['hud_adi']['pitchLines']['pitchAngleSpan']/2) {
+            fill(ground);
+            circle(0,0,diameterADI);
+        }
+        else {
+            for (let i = 0; i < segmentAngles.length; i++) {
+                fill(colors[i]);
+                arc(
+                    0,
+                    0,
+                    diameterADI,
+                    diameterADI,
+                    radians(segmentAngles[i]),
+                    radians(segmentAngles[(i+1)%(segmentAngles.length)]),
+                    OPEN
+                );
+            }        
+        }
     }
 
-    drawTerrainCompass(
-        radius,
-        horizonDipDepth,
-        headingDeg
-    );
+    if (configDict['hud_adi']['terrainCompass']['display']) {
+        
+        drawTerrainCompass(
+            radius,
+            horizonDipDepth,
+            headingDeg
+        );
+    }
 
     drawBankScales(diameterADI);
 
@@ -410,21 +976,19 @@ function terrain(diameterADI, rollDeg, pitchDeg, headingDeg) {
     rotate(-radians(rollDeg));
 }
 
-
 function postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees) {
     strokeWeight(1);
     stroke('white');
     fill('white');
     textSize(diameterCompass*0.04);
     textAlign(RIGHT);
-    let textMessage = "Bank Angle : " + rollDegrees;
+    let textMessage = "Bank Angle : " + rollDegrees.toFixed(3);
     text(textMessage, diameterCompass/2, diameterCompass/2 - (3*diameterCompass*0.04));
-    textMessage = "Pitch Angle : " + pitchDegrees;
+    textMessage = "Pitch Angle : " + pitchDegrees.toFixed(3);
     text(textMessage, diameterCompass/2, diameterCompass/2 - (2*diameterCompass*0.04));
-    textMessage = "Heading Angle : " + headingDegrees;
+    textMessage = "Heading Angle : " + headingDegrees.toFixed(3);
     text(textMessage, diameterCompass/2, diameterCompass/2 - (1*diameterCompass*0.04));
 }
-
 
 function drawCompass(diameterCompass, diameterADI, headingDeg) {
     radiusCompass = diameterCompass/2;
@@ -474,7 +1038,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
                     -radiusCompass*sin(theta));
                 break;
             default:
-                if (key==='0') {
+                if ((key==='0')||(key==='360')) {
                     c = color(
                         configDict['hud_adi']['compass']['scaleLines'][3]['stroke']['color']['R'],
                         configDict['hud_adi']['compass']['scaleLines'][3]['stroke']['color']['G'],
@@ -482,6 +1046,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
                     );
                     strokeWeight(configDict['hud_adi']['compass']['scaleLines'][3]['stroke']['weight']);
                     stroke(c);
+                    fill(c);
                 } else {
                     c = color(
                         configDict['hud_adi']['compass']['scaleLines'][2]['stroke']['color']['R'],
@@ -490,6 +1055,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
                     );
                     strokeWeight(configDict['hud_adi']['compass']['scaleLines'][2]['stroke']['weight']);
                     stroke(c);
+                    fill(c);
                 }
                 line(
                     ((radiusCompass+radiusADI)/2)*cos(theta),
@@ -501,52 +1067,16 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
     rotate(radians(-headingDeg));
 }
 
-// function keyPressed() {
-//     if (keyCode === LEFT_ARROW) {
-//         rollDegrees+=1;
-//     } else if (keyCode === RIGHT_ARROW) {
-//         rollDegrees-=1;
-//     } else if (keyCode === UP_ARROW) {
-//         pitchDegrees+=1;
-//     } else if (keyCode === DOWN_ARROW) {
-//         pitchDegrees-=1;
-//     } else if (keyCode === 188) {
-//         headingDegrees+=1;
-//         headingDegrees%=360;
-//     } else if (keyCode === 190) {
-//         headingDegrees-=1;
-//         headingDegrees%=360;
-//     }
-// }
-
-function keyCheck() {
-    if (keyIsDown(LEFT_ARROW)) {
-        rollDegrees+=1;
-        rollDegrees%=360;
-        if (rollDegrees>180) {
-            rollDegrees-=360;
-        }
-    } else if (keyIsDown(RIGHT_ARROW)) {
-        rollDegrees-=1;
-        rollDegrees=rollDegrees%360;
-        if (rollDegrees<-180) {
-            rollDegrees+=360;
-        }
-    } else if (keyIsDown(UP_ARROW)) {
-        pitchDegrees+=1;
-    } else if (keyIsDown(DOWN_ARROW)) {
-        pitchDegrees-=1;
-    } else if (keyIsDown(188)) {
-        headingDegrees+=1;
-        headingDegrees%=360;
-        // print(headingDegrees);
-    } else if (keyIsDown(190)) {
-        headingDegrees-=1;
-        headingDegrees=headingDegrees%360;
-        if (headingDegrees<0) {
-            headingDegrees+=360;
-        }
-        // print(headingDegrees);
+function dataCheck() {
+    if (rollDegrees>180) {
+        rollDegrees-=360;
+    }
+    if (rollDegrees<-180) {
+        rollDegrees+=360;
+    }
+    headingDegrees=headingDegrees%360;
+    if (headingDegrees<0) {
+        headingDegrees+=360;
     }
 }
 
@@ -566,19 +1096,53 @@ function windowResized() {
     var elementId = 'adi';
     var canvasDiv = document.getElementById(elementId);
     var width = canvasDiv.offsetWidth;
-    resizeCanvas(width, width);
+    var height = configDict['hud_adi']['canvas']['heightToWidthRatio'] * width;
+    resizeCanvas(width, height);
     diameterADI = configDict['hud_adi']['ADI']['diameterRatio'] * min(width, height);
     diameterCompass = configDict['hud_adi']['compass']['diameterRatio'] * min(width, height);
 }
+
+function postVelocityBody(width, height) {
+    strokeWeight(1);
+    stroke('white');
+    fill('white');
+    textSize(width*0.03);
+    textAlign(RIGHT);
+    let textMessage = "V0 : " + vel_xyz['0'].toFixed(1);
+    text(textMessage, width/2, height/2 - (4*height*0.03));
+    textMessage = "Vx : " + vel_xyz['x'].toFixed(1);
+    text(textMessage, width/2, height/2 - (3*height*0.03));
+    textMessage = "Vy : " + vel_xyz['y'].toFixed(1);
+    text(textMessage, width/2, height/2 - (2*height*0.03));
+    textMessage = "Vz : " + vel_xyz['z'].toFixed(1);
+    text(textMessage, width/2, height/2 - (1*height*0.03));
+}
+
 
 function draw() {
     background(50);
     translate(width/2, height/2);
 
+    dataCheck();
+
     drawADI(diameterADI);
     terrain(diameterADI, rollDegrees, pitchDegrees, headingDegrees);
     drawADIPlane(diameterADI);
-    postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
+    // postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
     drawCompass(diameterCompass, diameterADI, headingDegrees);
-    keyCheck();
+    drawTopCompass(
+        diameterCompass/2,
+        20 - height/2,
+        headingDegrees
+    );
+    drawASI(width, height);
+    showGS(width, height);
+    drawAltimeter(width, height);
+    drawVSI(width, height);
+
+    drawAOA(width, height);
+    drawSlip(width, height);
+
+    // postVelocityBody(width, height);
+    // keyCheck();
 }

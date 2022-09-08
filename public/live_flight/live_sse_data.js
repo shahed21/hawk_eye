@@ -1,6 +1,6 @@
 function updateFlightData(jsondata, positionProperty, orientationProperty) {
     const data = JSON.parse(jsondata);
-    rollDegrees = -data.euler0 * (180/Math.PI);
+    rollDegrees = -(data.euler0) * (180/Math.PI);
     pitchDegrees = data.euler1 * (180/Math.PI);
     headingDegrees = data.euler2 * (180/Math.PI);
     headingRadians =  (data.euler2-(Math.PI/2));
@@ -11,6 +11,37 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
             headingRadians+= 2* Math.PI;
         }
     }
+
+    alpha['degrees'] = (data.alpha) * (180/Math.PI);
+    beta['degrees'] = (data.beta) * (180/Math.PI);
+
+    alpha['radians'] = (data.alpha);
+    beta['radians'] = (data.beta);
+
+    //Airspeed needs a LPF
+    //Using a long IIR filter
+    airspeed['mps'] = + ((0.01) * (data.airspeed)) + ((0.99) * airspeed['mps']);
+    airspeed['knots'] = (1.943844) * (airspeed['mps']);
+    airspeed['kph'] = (3.6) * (airspeed['mps']);
+    airspeed['mph'] = (2.236936) * (airspeed['mps']);
+
+    altitude['meters'] = +(data.Alt);
+    altitude['feet'] = (3.28084) * (altitude['meters']);
+    altitude['yards'] = (altitude['feet'])/3;
+
+    groundSpeed['mps'] = Math.sqrt((data.vel_n) ** 2 +(data.vel_e) ** 2);
+    groundSpeed['knots'] = (1.943844) * (groundSpeed['mps']);
+    groundSpeed['kph'] = (3.6) * (groundSpeed['mps']);
+    groundSpeed['mph'] = (2.236936) * (groundSpeed['mps']);
+
+    vel_d['mps'] = + ( data.vel_d );
+    vel_d['fps'] = (3.28084) * (vel_d['mps']);
+
+    vel_xyz['0'] = data.vel_0;
+    vel_xyz['x'] = data.vel_x;
+    vel_xyz['y'] = data.vel_y;
+    vel_xyz['z'] = data.vel_z;
+
     // const altitudeOffset = +(38);
     // data.alt_corrected = (+(data.alt_corrected)) + (altitudeOffset);
 
