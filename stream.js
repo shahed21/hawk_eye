@@ -134,6 +134,11 @@ function getVel_b_alpha_beta_quat(rowData) {
 
   rowData['alpha'] = alpha_filter;
   rowData['beta'] = beta_filter;
+
+  rowData['wind_vel_n'] = rowData['vel_n'] - rowData['airspeed'] * Math.cos(rowData['euler2']);
+  rowData['wind_vel_e'] = rowData['vel_e'] - rowData['airspeed'] * Math.sin(rowData['euler2']);
+  rowData['wind_vel'] = Math.sqrt((rowData['wind_vel_n'])**2 + (rowData['wind_vel_e'])**2 );
+  rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
 }
 
 function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {

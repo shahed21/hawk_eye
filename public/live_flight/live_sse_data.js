@@ -25,6 +25,15 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     airspeed['kph'] = (3.6) * (airspeed['mps']);
     airspeed['mph'] = (2.236936) * (airspeed['mps']);
 
+    windspeed['mps'] = + (data.wind_vel);
+    windspeed['knots'] = (1.943844) * (windspeed['mps']);
+    windspeed['kph'] = (3.6) * (windspeed['mps']);
+    windspeed['mph'] = (2.236936) * (windspeed['mps']);
+
+    wind_direction['degrees'] = (data.wind_direction) * (180/Math.PI);
+    wind_direction['radians'] = (data.wind_direction);
+
+
     altitude['meters'] = +(data.Alt);
     altitude['feet'] = (3.28084) * (altitude['meters']);
     altitude['yards'] = (altitude['feet'])/3;

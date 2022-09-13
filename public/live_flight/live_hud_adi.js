@@ -19,6 +19,18 @@ groundSpeed['knots'] = 0;
 groundSpeed['mph'] = 0;
 groundSpeed['kph'] = 0;
 
+// Windspeeds in different units
+const windspeed = {};
+windspeed['mps'] = 0;
+windspeed['knots'] = 0;
+windspeed['mph'] = 0;
+windspeed['kph'] = 0;
+
+const wind_direction = {};
+wind_direction['degrees'] = 0;
+wind_direction['radians'] = 0;
+
+
 const altitude = {};
 altitude['meters'] = 0;
 altitude['feet'] = 0;
@@ -1065,6 +1077,14 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
         }
     }
     rotate(radians(-headingDeg));
+
+    rotate(+(wind_direction['radians']));
+    strokeWeight(1);
+    line(0, -radiusCompass, 0, -radiusCompass-30);
+    textAlign(CENTER, BOTTOM);
+    let textMessage = windspeed['mps'].toFixed(1);
+    text(textMessage, 0, -radiusCompass-50);
+    rotate(-(wind_direction['radians']));
 }
 
 function dataCheck() {
