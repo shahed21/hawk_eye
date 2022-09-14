@@ -30,6 +30,9 @@ const wind_direction = {};
 wind_direction['degrees'] = 0;
 wind_direction['radians'] = 0;
 
+const track_angle = {};
+track_angle['degrees'] = 0;
+track_angle['radians'] = 0;
 
 const altitude = {};
 altitude['meters'] = 0;
@@ -1078,16 +1081,44 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
     }
 
     rotate(+(wind_direction['radians']));
+    c = color(
+        configDict['hud_adi']['compass']['wind']['color']['R'],
+        configDict['hud_adi']['compass']['wind']['color']['G'],
+        configDict['hud_adi']['compass']['wind']['color']['B']
+    );
 
-    strokeWeight(1);
-    line(0, -radiusCompass, 0, -radiusCompass-30);
+    stroke(c);
+    fill(c);
+    textSize(diameterCompass*configDict['hud_adi']['compass']['wind']['textSizeRatio']);
+    strokeWeight(configDict['hud_adi']['compass']['wind']['weight']);
+    line(0, -radiusCompass, 0, -radiusCompass-(configDict['hud_adi']['compass']['wind']['lineDistance']));
     textAlign(CENTER, BOTTOM);
     let textMessage = windspeed['mps'].toFixed(1);
-    text(textMessage, 0, -radiusCompass-50);
+    text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['wind']['speedDistance']));
     textMessage = wind_direction['degrees'].toFixed(1);
-    text(textMessage, 0, -radiusCompass-40);
+    text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['wind']['angleDistance']));
     
     rotate(-(wind_direction['radians']));
+
+    rotate(+(track_angle['radians']));
+    c = color(
+        configDict['hud_adi']['compass']['track']['color']['R'],
+        configDict['hud_adi']['compass']['track']['color']['G'],
+        configDict['hud_adi']['compass']['track']['color']['B']
+    );
+
+    stroke(c);
+    fill(c);
+    textSize(diameterCompass*configDict['hud_adi']['compass']['track']['textSizeRatio']);
+    strokeWeight(configDict['hud_adi']['compass']['track']['weight']);
+    line(0, -radiusCompass, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['lineDistance']));
+    textAlign(CENTER, BOTTOM);
+    textMessage = groundSpeed['mps'].toFixed(1);
+    text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['speedDistance']));
+    textMessage = track_angle['degrees'].toFixed(1);
+    text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['angleDistance']));
+    
+    rotate(-(track_angle['radians']));
 
     rotate(radians(-headingDeg));
 

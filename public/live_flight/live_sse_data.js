@@ -33,6 +33,9 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     wind_direction['degrees'] = (data.wind_direction) * (180/Math.PI);
     wind_direction['radians'] = (data.wind_direction);
 
+    track_angle['degrees'] = (data.track_angle) * (180/Math.PI);
+    track_angle['radians'] = (data.track_angle);
+
 
     altitude['meters'] = +(data.Alt);
     altitude['feet'] = (3.28084) * (altitude['meters']);

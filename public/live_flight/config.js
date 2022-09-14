@@ -414,6 +414,30 @@ let configDict = {
                     }
                 },
             },
+            'track': {
+                'weight': 1,
+                'textSizeRatio': 0.05,
+                'lineDistance': 30,
+                'speedDistance': 40,
+                'angleDistance': 60,
+                'color': {
+                    'R': 0,
+                    'G': 150,
+                    'B': 0
+                }
+            },
+            'wind': {
+                'weight': 1,
+                'textSizeRatio': 0.05,
+                'lineDistance': 30,
+                'speedDistance': 40,
+                'angleDistance': 60,
+                'color': {
+                    'R': 135,
+                    'G': 206,
+                    'B': 235
+                }
+            },
             'scaleLines': [
                 {
                     'stroke': {

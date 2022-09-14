@@ -146,6 +146,7 @@ function getVel_b_alpha_beta_quat(rowData) {
   rowData['wind_vel_e'] = rowData['vel_e'] - airvel_ned[2];
   rowData['wind_vel'] = Math.sqrt((rowData['wind_vel_n'])**2 + (rowData['wind_vel_e'])**2 );
   rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
+  rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
 }
 
 function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
