@@ -1076,15 +1076,21 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
                     -radiusCompass*sin(theta));
         }
     }
-    rotate(radians(-headingDeg));
 
     rotate(+(wind_direction['radians']));
+
     strokeWeight(1);
     line(0, -radiusCompass, 0, -radiusCompass-30);
     textAlign(CENTER, BOTTOM);
     let textMessage = windspeed['mps'].toFixed(1);
     text(textMessage, 0, -radiusCompass-50);
+    textMessage = wind_direction['degrees'].toFixed(1);
+    text(textMessage, 0, -radiusCompass-40);
+    
     rotate(-(wind_direction['radians']));
+
+    rotate(radians(-headingDeg));
+
 }
 
 function dataCheck() {
