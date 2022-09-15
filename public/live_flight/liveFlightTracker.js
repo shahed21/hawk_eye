@@ -21,6 +21,10 @@ setup_live_sse_connection(positionProperty, orientationProperty);
 
 viewer.clock.shouldAnimate = true;
 
+// viewer.clock.onTick.addEventListener(function(clock) {
+//   const currentTime = clock.currentTime;
+// });
+
 async function loadModel() {
   // Load the glTF model from Cesium ion.
   const airplaneUri = await Cesium.IonResource.fromAssetId(1257420);
