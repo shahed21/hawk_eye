@@ -4,26 +4,17 @@ let diameterCompass = 0;
 
 const onTickData = {};
 
-// Airspeeds in different units
+// Attitude Angles In Degrees
+onTickData['rollDegrees'] = 0;
+onTickData['pitchDegrees'] = 0;
+onTickData['headingDegrees'] = 0;
+
+    // Airspeeds in different units
 onTickData['airspeed'] = {};
 onTickData['airspeed']['mps'] = 0;
 onTickData['airspeed']['knots'] = 0;
 onTickData['airspeed']['mph'] = 0;
 onTickData['airspeed']['kph'] = 0;
-
-function initOnTickData() {
-    // Attitude Angles In Degrees
-    onTickData['rollDegrees'] = 0;
-    onTickData['pitchDegrees'] = 0;
-    onTickData['headingDegrees'] = 0;
-
-    // Airspeeds in different units
-    // onTickData['airspeed'] = {};
-    // onTickData['airspeed']['mps'] = 0;
-    // onTickData['airspeed']['knots'] = 0;
-    // onTickData['airspeed']['mph'] = 0;
-    // onTickData['airspeed']['kph'] = 0;
-}
 
 const groundSpeed = {};
 groundSpeed['mps'] = 0;
@@ -1163,8 +1154,6 @@ function setup() {
     sketchCanvas.parent(elementId);
     diameterADI = configDict['hud_adi']['ADI']['diameterRatio'] * min(width, height);
     diameterCompass = configDict['hud_adi']['compass']['diameterRatio'] * min(width, height);
-
-    initOnTickData();
 }
 
 function windowResized() {
