@@ -38,10 +38,10 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     altitude['feet'] = (3.28084) * (altitude['meters']);
     altitude['yards'] = (altitude['feet'])/3;
 
-    groundSpeed['mps'] = Math.sqrt((data.vel_n) ** 2 +(data.vel_e) ** 2);
-    groundSpeed['knots'] = (1.943844) * (groundSpeed['mps']);
-    groundSpeed['kph'] = (3.6) * (groundSpeed['mps']);
-    groundSpeed['mph'] = (2.236936) * (groundSpeed['mps']);
+    // groundSpeed['mps'] = Math.sqrt((data.vel_n) ** 2 +(data.vel_e) ** 2);
+    // groundSpeed['knots'] = (1.943844) * (groundSpeed['mps']);
+    // groundSpeed['kph'] = (3.6) * (groundSpeed['mps']);
+    // groundSpeed['mph'] = (2.236936) * (groundSpeed['mps']);
 
     vel_d['mps'] = + ( data.vel_d );
     vel_d['fps'] = (3.28084) * (vel_d['mps']);
@@ -72,6 +72,11 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     sampledProperties['airspeed']['knots'].addSample(time, data.filtered_airspeed_knots);
     sampledProperties['airspeed']['mph'].addSample(time, data.filtered_airspeed_mph);
     sampledProperties['airspeed']['kph'].addSample(time, data.filtered_airspeed_kph);
+
+    sampledProperties['groundspeed']['mps'].addSample(time,   data.filtered_groundspeed_mps);
+    sampledProperties['groundspeed']['knots'].addSample(time, data.filtered_groundspeed_knots);
+    sampledProperties['groundspeed']['mph'].addSample(time,   data.filtered_groundspeed_mph);
+    sampledProperties['groundspeed']['kph'].addSample(time,   data.filtered_groundspeed_kph);
 }
 
 function setup_live_sse_connection(positionProperty, orientationProperty) {

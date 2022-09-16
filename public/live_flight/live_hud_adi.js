@@ -16,11 +16,11 @@ onTickData['airspeed']['knots'] = 0;
 onTickData['airspeed']['mph'] = 0;
 onTickData['airspeed']['kph'] = 0;
 
-const groundSpeed = {};
-groundSpeed['mps'] = 0;
-groundSpeed['knots'] = 0;
-groundSpeed['mph'] = 0;
-groundSpeed['kph'] = 0;
+onTickData['groundspeed'] = {};
+onTickData['groundspeed']['mps'] = 0;
+onTickData['groundspeed']['knots'] = 0;
+onTickData['groundspeed']['mph'] = 0;
+onTickData['groundspeed']['kph'] = 0;
 
 // Windspeeds in different units
 const windspeed = {};
@@ -243,8 +243,12 @@ function showGS(width, height) {
 
         textSize(width*configDict['hud_adi']['GS']['mainTextSizeRatio']);
         textAlign(LEFT, CENTER);
-        textMessage = groundSpeed[unitChosen].toFixed(1);
-        text(textMessage, xpos, ypos);
+        if (isNaN(onTickData['groundspeed'][unitChosen])) {
+            console.log(`${onTickData['groundspeed'][unitChosen]} is NaN`);
+        } else {
+            textMessage = onTickData['groundspeed'][unitChosen].toFixed(1);
+            text(textMessage, xpos, ypos);
+        }
     }
 }
 
@@ -1120,8 +1124,12 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
     strokeWeight(configDict['hud_adi']['compass']['track']['weight']);
     line(0, -radiusCompass, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['lineDistance']));
     textAlign(CENTER, BOTTOM);
-    textMessage = groundSpeed['mps'].toFixed(1);
-    text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['speedDistance']));
+    if (isNaN(onTickData['groundspeed']['mps'])) {
+        console.log(`${onTickData['groundspeed']['mps']} is NaN`);
+    } else {
+        textMessage = onTickData['groundspeed']['mps'].toFixed(1);
+        text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['speedDistance']));
+    }
     textMessage = track_angle['degrees'].toFixed(1);
     text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['angleDistance']));
     

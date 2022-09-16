@@ -13,6 +13,12 @@ function setupSampleProperties(sampledProperties) {
   sampledProperties['airspeed']['knots'] = new Cesium.SampledProperty(Number);
   sampledProperties['airspeed']['mph'] = new Cesium.SampledProperty(Number);
   sampledProperties['airspeed']['kph'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['groundspeed'] = {};
+  sampledProperties['groundspeed']['mps'] = new Cesium.SampledProperty(Number);
+  sampledProperties['groundspeed']['knots'] = new Cesium.SampledProperty(Number);
+  sampledProperties['groundspeed']['mph'] = new Cesium.SampledProperty(Number);
+  sampledProperties['groundspeed']['kph'] = new Cesium.SampledProperty(Number);
 }
 
 function getTimedDataSample(currentTime, sampledProperties, onTickData) {
@@ -24,6 +30,11 @@ function getTimedDataSample(currentTime, sampledProperties, onTickData) {
   onTickData['airspeed']['knots'] = sampledProperties['airspeed']['knots'].getValue(currentTime);
   onTickData['airspeed']['mph']   = sampledProperties['airspeed']['mph'].getValue(currentTime);
   onTickData['airspeed']['kph']   = sampledProperties['airspeed']['kph'].getValue(currentTime);
+
+  onTickData['groundspeed']['mps']   = sampledProperties['groundspeed']['mps'].getValue(currentTime);
+  onTickData['groundspeed']['knots'] = sampledProperties['groundspeed']['knots'].getValue(currentTime);
+  onTickData['groundspeed']['mph']   = sampledProperties['groundspeed']['mph'].getValue(currentTime);
+  onTickData['groundspeed']['kph']   = sampledProperties['groundspeed']['kph'].getValue(currentTime);
 }
 
 const viewer = new Cesium.Viewer('cesiumContainer', {

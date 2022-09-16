@@ -10,6 +10,7 @@ const app = express();
 const data = [];
 var jsonDataIndex = 1;
 var filtered_airspeed = 0;
+var filtered_groundspeed = 0;
 
 function prepareMessage(res, jsonData, startTime) {
   const currTime = Date.now();
@@ -161,6 +162,15 @@ function getAirspeeds(rowData) {
   // console.log(rowData['filtered_airspeed_mps']);
 }
 
+function getGroundspeeds(rowData) {
+  const gs = Math.sqrt((rowData.vel_n) ** 2 +(rowData.vel_e) ** 2);
+  filtered_groundspeed = + ((0.01) * (gs)) + ((0.99) * (filtered_groundspeed));
+  rowData['filtered_groundspeed_mps'] = filtered_groundspeed;
+  rowData['filtered_groundspeed_knots'] = (1.943844) * (filtered_groundspeed);
+  rowData['filtered_groundspeed_kph'] = (3.6) * (filtered_groundspeed);
+  rowData['filtered_groundspeed_mph'] = (2.236936) * (filtered_groundspeed);
+}
+
 function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
   // (cos(p) cos(y) | sin(p) sin(r) cos(y) + cos(r) sin(y) | sin(r) sin(y) - sin(p) cos(r) cos(y)
   // -cos(p) sin(y) | cos(r) cos(y) - sin(p) sin(r) sin(y) | sin(p) cos(r) sin(y) + sin(r) cos(y)
@@ -210,6 +220,7 @@ fs.createReadStream(csvFilePath)
             //This is where we should add more data
             getVel_b_alpha_beta_quat(rowData);
             getAirspeeds(rowData);
+            getGroundspeeds(rowData);
             // getVel_b_alpha_beta(
             //   rowData,
             //   -(rowData['euler0']),
