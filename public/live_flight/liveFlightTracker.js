@@ -1,3 +1,31 @@
+const sampledProperties = {};
+
+function setupSampleProperties(sampledProperties) {
+  sampledProperties['positionProperty'] = new Cesium.SampledPositionProperty();
+  sampledProperties['orientationProperty'] = new Cesium.SampledProperty(Cesium.Quaternion);
+
+  sampledProperties['rollDegrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['pitchDegrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['headingDegrees'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['airspeed'] = {};
+  sampledProperties['airspeed']['mps'] = new Cesium.SampledProperty(Number);
+  sampledProperties['airspeed']['knots'] = new Cesium.SampledProperty(Number);
+  sampledProperties['airspeed']['mph'] = new Cesium.SampledProperty(Number);
+  sampledProperties['airspeed']['kph'] = new Cesium.SampledProperty(Number);
+}
+
+function getTimedDataSample(currentTime, sampledProperties, onTickData) {
+  onTickData['rollDegrees'] = sampledProperties['rollDegrees'].getValue(currentTime);
+  onTickData['pitchDegrees'] = sampledProperties['pitchDegrees'].getValue(currentTime);
+  onTickData['headingDegrees'] = sampledProperties['headingDegrees'].getValue(currentTime);
+
+  onTickData['airspeed']['mps']   = sampledProperties['airspeed']['mps'].getValue(currentTime);
+  onTickData['airspeed']['knots'] = sampledProperties['airspeed']['knots'].getValue(currentTime);
+  onTickData['airspeed']['mph']   = sampledProperties['airspeed']['mph'].getValue(currentTime);
+  onTickData['airspeed']['kph']   = sampledProperties['airspeed']['kph'].getValue(currentTime);
+}
+
 const viewer = new Cesium.Viewer('cesiumContainer', {
   terrainProvider: Cesium.createWorldTerrain()
 });
@@ -14,26 +42,26 @@ viewer.clock.currentTime = start.clone();
 viewer.timeline.zoomTo(start, stop);
 viewer.clock.multiplier = 1;
 
-const positionProperty = new Cesium.SampledPositionProperty();
-const orientationProperty = new Cesium.SampledProperty(Cesium.Quaternion);
+setupSampleProperties(sampledProperties);
 
-setup_live_sse_connection(positionProperty, orientationProperty);
+setup_live_sse_connection(sampledProperties['positionProperty'], sampledProperties['orientationProperty']);
 
 viewer.clock.shouldAnimate = true;
 
-// viewer.clock.onTick.addEventListener(function(clock) {
-//   const currentTime = clock.currentTime;
-// });
+viewer.clock.onTick.addEventListener(function(clock) {
+  const currentTime = clock.currentTime;
+  getTimedDataSample(currentTime, sampledProperties, onTickData);
+});
 
 async function loadModel() {
   // Load the glTF model from Cesium ion.
   const airplaneUri = await Cesium.IonResource.fromAssetId(1257420);
   viewer.trackedEntity = viewer.entities.add({
     availability: new Cesium.TimeIntervalCollection([new Cesium.TimeInterval({start: start, stop: stop})]),
-    position: positionProperty,
+    position: sampledProperties['positionProperty'],
     model: {uri: airplaneUri, scale: 3.2 / 41.021, minimumPixelSize: 100.0},
     // Automatically compute the orientation from the position.
-    orientation: orientationProperty,
+    orientation: sampledProperties['orientationProperty'],
     path: new Cesium.PathGraphics({width: 3})
   });
 }

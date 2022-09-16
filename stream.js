@@ -9,6 +9,7 @@ const port = 5000;
 const app = express();
 const data = [];
 var jsonDataIndex = 1;
+var filtered_airspeed = 0;
 
 function prepareMessage(res, jsonData, startTime) {
   const currTime = Date.now();
@@ -149,6 +150,17 @@ function getVel_b_alpha_beta_quat(rowData) {
   rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
 }
 
+function getAirspeeds(rowData) {
+  filtered_airspeed = + ((0.01) * (rowData['airspeed'])) + ((0.99) * (filtered_airspeed));
+  rowData['filtered_airspeed_mps'] = filtered_airspeed;
+  rowData['filtered_airspeed_knots'] = (1.943844) * (filtered_airspeed);
+  rowData['filtered_airspeed_kph'] = (3.6) * (filtered_airspeed);
+  rowData['filtered_airspeed_mph'] = (2.236936) * (filtered_airspeed);
+
+  // console.log(rowData['airspeed']);
+  // console.log(rowData['filtered_airspeed_mps']);
+}
+
 function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
   // (cos(p) cos(y) | sin(p) sin(r) cos(y) + cos(r) sin(y) | sin(r) sin(y) - sin(p) cos(r) cos(y)
   // -cos(p) sin(y) | cos(r) cos(y) - sin(p) sin(r) sin(y) | sin(p) cos(r) sin(y) + sin(r) cos(y)
@@ -197,6 +209,7 @@ fs.createReadStream(csvFilePath)
 
             //This is where we should add more data
             getVel_b_alpha_beta_quat(rowData);
+            getAirspeeds(rowData);
             // getVel_b_alpha_beta(
             //   rowData,
             //   -(rowData['euler0']),

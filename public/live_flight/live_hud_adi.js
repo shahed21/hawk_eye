@@ -1,17 +1,29 @@
 let diameterADI = 0;
 let diameterCompass = 0;
 
-// Attitube Angles In Degrees
-var rollDegrees = 0;
-var pitchDegrees = 0;
-var headingDegrees = 0;
+
+const onTickData = {};
 
 // Airspeeds in different units
-const airspeed = {};
-airspeed['mps'] = 0;
-airspeed['knots'] = 0;
-airspeed['mph'] = 0;
-airspeed['kph'] = 0;
+onTickData['airspeed'] = {};
+onTickData['airspeed']['mps'] = 0;
+onTickData['airspeed']['knots'] = 0;
+onTickData['airspeed']['mph'] = 0;
+onTickData['airspeed']['kph'] = 0;
+
+function initOnTickData() {
+    // Attitude Angles In Degrees
+    onTickData['rollDegrees'] = 0;
+    onTickData['pitchDegrees'] = 0;
+    onTickData['headingDegrees'] = 0;
+
+    // Airspeeds in different units
+    // onTickData['airspeed'] = {};
+    // onTickData['airspeed']['mps'] = 0;
+    // onTickData['airspeed']['knots'] = 0;
+    // onTickData['airspeed']['mph'] = 0;
+    // onTickData['airspeed']['kph'] = 0;
+}
 
 const groundSpeed = {};
 groundSpeed['mps'] = 0;
@@ -250,8 +262,8 @@ function drawASI(width, height) {
         const spanRatio = configDict['hud_adi']['ASI']['verticalSpanRatio'];
         const unitChosen = configDict['hud_adi']['ASI']['unitChosen'];
         const airSpeedSpan = configDict['hud_adi']['ASI']['units'][unitChosen]['airSpeedSpan'];
-        const lowAirspeed = airspeed[unitChosen] - airSpeedSpan/2;
-        const highAirspeed = airspeed[unitChosen] + airSpeedSpan/2;
+        const lowAirspeed = onTickData['airspeed'][unitChosen] - airSpeedSpan/2;
+        const highAirspeed = onTickData['airspeed'][unitChosen] + airSpeedSpan/2;
         const airSpeedMinorTicks = [];
         const airSpeedMajorTicks = [];
         getTicks(
@@ -278,8 +290,12 @@ function drawASI(width, height) {
         fill(c);
         textSize(width*configDict['hud_adi']['ASI']['mainTextSizeRatio']);
         textAlign(LEFT, CENTER);
-        textMessage = airspeed[unitChosen].toFixed(1);
-        text(textMessage, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
+        if (isNaN(onTickData['airspeed'][unitChosen])) {
+            console.log(`${onTickData['airspeed'][unitChosen]} is NaN`);
+        } else {
+            textMessage = onTickData['airspeed'][unitChosen].toFixed(1);
+            text(textMessage, xpos + configDict['hud_adi']['ASI']['mainMarkerLength'], 0);
+        }
 
         textSize(width*configDict['hud_adi']['ASI']['majorTickTextSizeRatio']);
         noFill();
@@ -1125,15 +1141,15 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
 }
 
 function dataCheck() {
-    if (rollDegrees>180) {
-        rollDegrees-=360;
+    if (onTickData['rollDegrees']>180) {
+        onTickData['rollDegrees']-=360;
     }
-    if (rollDegrees<-180) {
-        rollDegrees+=360;
+    if (onTickData['rollDegrees']<-180) {
+        onTickData['rollDegrees']+=360;
     }
-    headingDegrees=headingDegrees%360;
-    if (headingDegrees<0) {
-        headingDegrees+=360;
+    onTickData['headingDegrees']=onTickData['headingDegrees']%360;
+    if (onTickData['headingDegrees']<0) {
+        onTickData['headingDegrees']+=360;
     }
 }
 
@@ -1147,6 +1163,8 @@ function setup() {
     sketchCanvas.parent(elementId);
     diameterADI = configDict['hud_adi']['ADI']['diameterRatio'] * min(width, height);
     diameterCompass = configDict['hud_adi']['compass']['diameterRatio'] * min(width, height);
+
+    initOnTickData();
 }
 
 function windowResized() {
@@ -1183,14 +1201,14 @@ function draw() {
     dataCheck();
 
     drawADI(diameterADI);
-    terrain(diameterADI, rollDegrees, pitchDegrees, headingDegrees);
+    terrain(diameterADI, onTickData['rollDegrees'], onTickData['pitchDegrees'], onTickData['headingDegrees']);
     drawADIPlane(diameterADI);
-    // postEulerAngles(diameterCompass, rollDegrees, pitchDegrees, headingDegrees);
-    drawCompass(diameterCompass, diameterADI, headingDegrees);
+    // postEulerAngles(diameterCompass, onTickData['rollDegrees'], onTickData['pitchDegrees'], onTickData['headingDegrees']);
+    drawCompass(diameterCompass, diameterADI, onTickData['headingDegrees']);
     drawTopCompass(
         diameterCompass/2,
         20 - height/2,
-        headingDegrees
+        onTickData['headingDegrees']
     );
     drawASI(width, height);
     showGS(width, height);
