@@ -11,6 +11,9 @@ const data = [];
 var jsonDataIndex = 1;
 var filtered_airspeed = 0;
 var filtered_groundspeed = 0;
+var filtered_windspeed = 0;
+var filtered_winddir = 0;
+var filtered_groundtrackdir = 0;
 
 function prepareMessage(res, jsonData, startTime) {
   const currTime = Date.now();
@@ -144,11 +147,28 @@ function getVel_b_alpha_beta_quat(rowData) {
   hamilton(q, airvel_xyz, mid_level_vec);
   hamilton(mid_level_vec, qstar, airvel_ned);
 
-  rowData['wind_vel_n'] = rowData['vel_n'] - airvel_ned[1];
-  rowData['wind_vel_e'] = rowData['vel_e'] - airvel_ned[2];
-  rowData['wind_vel'] = Math.sqrt((rowData['wind_vel_n'])**2 + (rowData['wind_vel_e'])**2 );
-  rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
-  rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
+  const wind_vel_n = rowData['vel_n'] - airvel_ned[1];
+  const wind_vel_e = rowData['vel_e'] - airvel_ned[2];
+
+  // rowData['wind_vel_n'] = rowData['vel_n'] - airvel_ned[1];
+  // rowData['wind_vel_e'] = rowData['vel_e'] - airvel_ned[2];
+  // rowData['wind_vel'] = Math.sqrt((rowData['wind_vel_n'])**2 + (rowData['wind_vel_e'])**2 );
+  // rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
+  // rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
+  filtered_windspeed = ((0.01) * (Math.sqrt((wind_vel_n)**2 + (wind_vel_e)**2 ))) + ((0.99) * (filtered_windspeed));
+  filtered_winddir = ((0.01) * (Math.atan2(-(wind_vel_e), -(wind_vel_n)))) + ((0.99) * (filtered_winddir));
+  filtered_groundtrackdir = ((0.01) * (Math.atan2((rowData['vel_e']), (rowData['vel_n'])))) + ((0.99) * (filtered_groundtrackdir));
+
+  rowData['filtered_windspeed_mps'] =                 filtered_windspeed;
+  rowData['filtered_windspeed_knots'] = (1.943844) * (filtered_windspeed);
+  rowData['filtered_windspeed_kph'] = (3.6) *        (filtered_windspeed);
+  rowData['filtered_windspeed_mph'] = (2.236936) *   (filtered_windspeed);
+
+  rowData['filtered_winddir_deg'] = (180/Math.PI) *  (filtered_winddir);
+  rowData['filtered_winddir_rad'] =                   filtered_winddir;
+
+  rowData['filtered_groundtrackdir_deg'] = (180/Math.PI) *  (filtered_groundtrackdir);
+  rowData['filtered_groundtrackdir_rad'] =                   filtered_groundtrackdir;
 }
 
 function getAirspeeds(rowData) {

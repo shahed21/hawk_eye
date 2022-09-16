@@ -15,33 +15,22 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     alpha['radians'] = (data.alpha);
     beta['radians'] = (data.beta);
 
-    //Airspeed needs a LPF
-    //Using a long IIR filter
-    // airspeed['mps'] = + ((0.01) * (data.airspeed)) + ((0.99) * airspeed['mps']);
-    // airspeed['knots'] = (1.943844) * (airspeed['mps']);
-    // airspeed['kph'] = (3.6) * (airspeed['mps']);
-    // airspeed['mph'] = (2.236936) * (airspeed['mps']);
+    // windspeed['mps'] = + (data.wind_vel);
+    // windspeed['knots'] = (1.943844) * (windspeed['mps']);
+    // windspeed['kph'] = (3.6) * (windspeed['mps']);
+    // windspeed['mph'] = (2.236936) * (windspeed['mps']);
 
-    windspeed['mps'] = + (data.wind_vel);
-    windspeed['knots'] = (1.943844) * (windspeed['mps']);
-    windspeed['kph'] = (3.6) * (windspeed['mps']);
-    windspeed['mph'] = (2.236936) * (windspeed['mps']);
+    // wind_direction['degrees'] = (data.wind_direction) * (180/Math.PI);
+    // wind_direction['radians'] = (data.wind_direction);
 
-    wind_direction['degrees'] = (data.wind_direction) * (180/Math.PI);
-    wind_direction['radians'] = (data.wind_direction);
-
-    track_angle['degrees'] = (data.track_angle) * (180/Math.PI);
-    track_angle['radians'] = (data.track_angle);
+    // track_angle['degrees'] = (data.track_angle) * (180/Math.PI);
+    // track_angle['radians'] = (data.track_angle);
 
 
     altitude['meters'] = +(data.Alt);
     altitude['feet'] = (3.28084) * (altitude['meters']);
     altitude['yards'] = (altitude['feet'])/3;
 
-    // groundSpeed['mps'] = Math.sqrt((data.vel_n) ** 2 +(data.vel_e) ** 2);
-    // groundSpeed['knots'] = (1.943844) * (groundSpeed['mps']);
-    // groundSpeed['kph'] = (3.6) * (groundSpeed['mps']);
-    // groundSpeed['mph'] = (2.236936) * (groundSpeed['mps']);
 
     vel_d['mps'] = + ( data.vel_d );
     vel_d['fps'] = (3.28084) * (vel_d['mps']);
@@ -77,6 +66,17 @@ function updateFlightData(jsondata, positionProperty, orientationProperty) {
     sampledProperties['groundspeed']['knots'].addSample(time, data.filtered_groundspeed_knots);
     sampledProperties['groundspeed']['mph'].addSample(time,   data.filtered_groundspeed_mph);
     sampledProperties['groundspeed']['kph'].addSample(time,   data.filtered_groundspeed_kph);
+
+    sampledProperties['windspeed']['mps'].addSample(time,   data.filtered_windspeed_mps);
+    sampledProperties['windspeed']['knots'].addSample(time, data.filtered_windspeed_knots);
+    sampledProperties['windspeed']['mph'].addSample(time,   data.filtered_windspeed_mph);
+    sampledProperties['windspeed']['kph'].addSample(time,   data.filtered_windspeed_kph);
+
+    sampledProperties['winddirection']['degrees'].addSample(time, data.filtered_winddir_deg);
+    sampledProperties['winddirection']['radians'].addSample(time, data.filtered_winddir_rad);
+
+    sampledProperties['groundtrackdirection']['degrees'].addSample(time, data.filtered_groundtrackdir_deg);
+    sampledProperties['groundtrackdirection']['radians'].addSample(time, data.filtered_groundtrackdir_rad);
 }
 
 function setup_live_sse_connection(positionProperty, orientationProperty) {

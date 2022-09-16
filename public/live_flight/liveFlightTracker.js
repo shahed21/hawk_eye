@@ -19,6 +19,20 @@ function setupSampleProperties(sampledProperties) {
   sampledProperties['groundspeed']['knots'] = new Cesium.SampledProperty(Number);
   sampledProperties['groundspeed']['mph'] = new Cesium.SampledProperty(Number);
   sampledProperties['groundspeed']['kph'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['windspeed'] = {};
+  sampledProperties['windspeed']['mps'] = new Cesium.SampledProperty(Number);
+  sampledProperties['windspeed']['knots'] = new Cesium.SampledProperty(Number);
+  sampledProperties['windspeed']['mph'] = new Cesium.SampledProperty(Number);
+  sampledProperties['windspeed']['kph'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['winddirection'] = {};
+  sampledProperties['winddirection']['degrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['winddirection']['radians'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['groundtrackdirection'] = {};
+  sampledProperties['groundtrackdirection']['degrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['groundtrackdirection']['radians'] = new Cesium.SampledProperty(Number);
 }
 
 function getTimedDataSample(currentTime, sampledProperties, onTickData) {
@@ -35,6 +49,18 @@ function getTimedDataSample(currentTime, sampledProperties, onTickData) {
   onTickData['groundspeed']['knots'] = sampledProperties['groundspeed']['knots'].getValue(currentTime);
   onTickData['groundspeed']['mph']   = sampledProperties['groundspeed']['mph'].getValue(currentTime);
   onTickData['groundspeed']['kph']   = sampledProperties['groundspeed']['kph'].getValue(currentTime);
+
+  onTickData['windspeed']['mps']   = sampledProperties['windspeed']['mps'].getValue(currentTime);
+  onTickData['windspeed']['knots'] = sampledProperties['windspeed']['knots'].getValue(currentTime);
+  onTickData['windspeed']['mph']   = sampledProperties['windspeed']['mph'].getValue(currentTime);
+  onTickData['windspeed']['kph']   = sampledProperties['windspeed']['kph'].getValue(currentTime);
+
+  onTickData['winddirection']['degrees']   = sampledProperties['winddirection']['degrees'].getValue(currentTime);
+  onTickData['winddirection']['radians']   = sampledProperties['winddirection']['radians'].getValue(currentTime);
+
+  onTickData['groundtrackdirection']['degrees']   = sampledProperties['groundtrackdirection']['degrees'].getValue(currentTime);
+  onTickData['groundtrackdirection']['radians']   = sampledProperties['groundtrackdirection']['radians'].getValue(currentTime);
+
 }
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
