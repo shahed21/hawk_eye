@@ -87,7 +87,7 @@ function getVel_b_alpha_beta_quat_star(rowData) {
   vel_xyz = [];
   hamilton(mid_level, qstar, vel_xyz);
 
-  rowData['vel_0'] = vel_xyz[0];
+  // rowData['vel_0'] = vel_xyz[0];
   rowData['vel_x'] = vel_xyz[1];
   rowData['vel_y'] = vel_xyz[2];
   rowData['vel_z'] = vel_xyz[3];
@@ -202,18 +202,9 @@ function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
   rowData['vel'] = Math.sqrt((rowData['vel_x'])**2 + (rowData['vel_y'])**2 + (rowData['vel_z'])**2);
   
   // Angle of Attack
-  alpha_filter = 0.03 * Math.atan2((rowData['vel_z']), (rowData['vel_x'])) + 0.97 * alpha_filter;
-
+  rowData['alpha'] = Math.atan2((rowData['vel_z']), (rowData['vel_x']));
   // Slip Angle
-  beta_filter = 0.03 * Math.asin((rowData['vel_y'])/(rowData['vel'])) + 0.97 * beta_filter;
-
-  if ((rowData['vel']) < 0.3) {
-    alpha_filter = 0;
-    beta_filter = 0;
-  }
-
-  rowData['alpha'] = alpha_filter;
-  rowData['beta'] = beta_filter;
+  rowData['beta'] = Math.asin((rowData['vel_y'])/(rowData['vel']));
 }
 
 fs.createReadStream(csvFilePath)

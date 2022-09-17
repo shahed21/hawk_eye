@@ -37,28 +37,27 @@ onTickData['groundtrackdirection'] = {};
 onTickData['groundtrackdirection']['degrees'] = 0;
 onTickData['groundtrackdirection']['radians'] = 0;
 
-const altitude = {};
-altitude['meters'] = 0;
-altitude['feet'] = 0;
-altitude['yards'] = 0;
+onTickData['altitude'            ] = {};
+onTickData['altitude'            ]['meters' ] = 0;
+onTickData['altitude'            ]['feet'   ] = 0;
+onTickData['altitude'            ]['yards'  ] = 0;
 
-const vel_d = {};
-vel_d['mps'] = 0;
-vel_d['fps'] = 0;
+onTickData['vel_d'               ]={};
+onTickData['vel_d'               ]['mps'    ] = 0;
+onTickData['vel_d'               ]['fps'    ] = 0;
 
-const alpha = {};
-alpha['degrees'] = 0;
-alpha['radians'] = 0;
+onTickData['alpha'               ]={};
+onTickData['alpha'               ]['degrees'] = 0;
+onTickData['alpha'               ]['radians'] = 0; 
 
-const beta = {};
-beta['degrees'] = 0;
-beta['radians'] = 0;
+onTickData['beta'                ]={};
+onTickData['beta'                ]['degrees'] = 0;
+onTickData['beta'                ]['radians'] = 0;
 
-const vel_xyz = {};
-vel_xyz['0'] = 0;
-vel_xyz['x'] = 0;
-vel_xyz['y'] = 0;
-vel_xyz['z'] = 0;
+onTickData['vel_xyz'             ]={};
+onTickData['vel_xyz'             ]['x'      ] = 0;
+onTickData['vel_xyz'             ]['y'      ] = 0;
+onTickData['vel_xyz'             ]['z'      ] = 0;
 
 
 let headingDict = {
@@ -328,7 +327,7 @@ function drawSlip(width, height) {
         const slipSpan = configDict['hud_adi']['slip']['units'][unitChosen]['slipSpan'];
         const lowSlip = - slipSpan/2;
         const highSlip = + slipSpan/2;
-        const slipAngle = +(beta[unitChosen]);
+        const slipAngle = +(onTickData['beta'][unitChosen]);
         const slipMinorTicks = [];
         const slipMajorTicks = [];
         getTicks(
@@ -355,11 +354,15 @@ function drawSlip(width, height) {
         // line(xpos, ypos, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
         fill(c);
 
-        rect(xpos, ypos, xpos - (width/2)*spanRatio + (width)*(spanRatio)*((slipAngle)-(lowSlip))/slipSpan, ypos+configDict['hud_adi']['slip']['majorTickXOffset']);
-        textSize(width*configDict['hud_adi']['slip']['mainTextSizeRatio']);
-        textAlign(CENTER, BASELINE);
-        textMessage = slipAngle.toFixed(1) + 'º';
-        text(textMessage, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+        if (isNaN(slipAngle)) {
+            console.log(`${slipAngle} is NaN.`);
+        } else {
+            rect(xpos, ypos, xpos - (width/2)*spanRatio + (width)*(spanRatio)*((slipAngle)-(lowSlip))/slipSpan, ypos+configDict['hud_adi']['slip']['majorTickXOffset']);
+            textSize(width*configDict['hud_adi']['slip']['mainTextSizeRatio']);
+            textAlign(CENTER, BASELINE);
+            textMessage = slipAngle.toFixed(1) + 'º';
+            text(textMessage, xpos, ypos - configDict['hud_adi']['slip']['mainMarkerLength']);
+        }
 
         // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
         // noFill();
@@ -397,7 +400,7 @@ function drawVSI(width, height) {
         const vSpeedSpan = configDict['hud_adi']['VSI']['units'][unitChosen]['vSpeedSpan'];
         const lowVSpeed = - vSpeedSpan/2;
         const highVSpeed = + vSpeedSpan/2;
-        const vs = -(vel_d[unitChosen]);
+        const vs = -(onTickData['vel_d'][unitChosen]);
         const vSpeedMinorTicks = [];
         const vSpeedMajorTicks = [];
         getTicks(
@@ -426,8 +429,12 @@ function drawVSI(width, height) {
         rect(xpos, 0, configDict['hud_adi']['VSI']['majorTickXOffset'], (height/2)*spanRatio - (height)*(spanRatio)*((vs)-(lowVSpeed))/vSpeedSpan);
         textSize(width*configDict['hud_adi']['VSI']['mainTextSizeRatio']);
         textAlign(RIGHT, CENTER);
-        textMessage = vs.toFixed(1);
-        text(textMessage, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+        if (isNaN(vs)) {
+            console.log(`${vs} is NaN.`);
+        } else {
+            textMessage = vs.toFixed(1);
+            text(textMessage, xpos - configDict['hud_adi']['VSI']['mainMarkerLength'], 0);
+        }
 
         // textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
         // noFill();
@@ -464,8 +471,8 @@ function drawAOA(width, height) {
         const spanRatio = configDict['hud_adi']['AOA']['verticalSpanRatio'];
         const unitChosen = configDict['hud_adi']['AOA']['unitChosen'];
         const alphaSpan = configDict['hud_adi']['AOA']['units'][unitChosen]['alphaSpan'];
-        const lowAlpha = alpha[unitChosen] - alphaSpan/2;
-        const highAlpha = alpha[unitChosen] + alphaSpan/2;
+        const lowAlpha = onTickData['alpha'][unitChosen] - alphaSpan/2;
+        const highAlpha = onTickData['alpha'][unitChosen] + alphaSpan/2;
         const alphaMinorTicks = [];
         const alphaMajorTicks = [];
         getTicks(
@@ -493,8 +500,12 @@ function drawAOA(width, height) {
         fill(c);
         textSize(width*configDict['hud_adi']['AOA']['mainTextSizeRatio']);
         textAlign(LEFT, CENTER);
-        textMessage = alpha[unitChosen].toFixed(1) + 'º';
-        text(textMessage, xpos + configDict['hud_adi']['AOA']['mainMarkerLength'], ypos);
+        if (isNaN(onTickData['alpha'][unitChosen])) {
+            console.log(`${onTickData['alpha'][unitChosen]} is NaN.`)
+        } else {
+            textMessage = onTickData['alpha'][unitChosen].toFixed(1) + 'º';
+            text(textMessage, xpos + configDict['hud_adi']['AOA']['mainMarkerLength'], ypos);
+        }
 
         textSize(width*configDict['hud_adi']['AOA']['majorTickTextSizeRatio']);
         noFill();
@@ -530,8 +541,8 @@ function drawAltimeter(width, height) {
         const spanRatio = configDict['hud_adi']['altimeter']['verticalSpanRatio'];
         const unitChosen = configDict['hud_adi']['altimeter']['unitChosen'];
         const altitudeSpan = configDict['hud_adi']['altimeter']['units'][unitChosen]['altitudeSpan'];
-        const lowAltitude = altitude[unitChosen] - altitudeSpan/2;
-        const highAltitude = altitude[unitChosen] + altitudeSpan/2;
+        const lowAltitude = onTickData['altitude'][unitChosen] - altitudeSpan/2;
+        const highAltitude = onTickData['altitude'][unitChosen] + altitudeSpan/2;
         const altitudeMinorTicks = [];
         const altitudeMajorTicks = [];
         getTicks(
@@ -558,8 +569,13 @@ function drawAltimeter(width, height) {
         fill(c);
         textSize(width*configDict['hud_adi']['altimeter']['mainTextSizeRatio']);
         textAlign(RIGHT, CENTER);
-        textMessage = altitude[unitChosen].toFixed(1);
-        text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
+        if (isNaN(onTickData['altitude'][unitChosen])) {
+            console.log(`${onTickData['altitude'][unitChosen]} is NaN.`)
+
+        } else {
+            textMessage = (onTickData['altitude'][unitChosen]).toFixed(1);
+            text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
+        }
 
         textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
         noFill();
@@ -1113,7 +1129,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
             let textMessage = onTickData['windspeed']['mps'].toFixed(1);
             text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['wind']['speedDistance']));
         }
-        let textMessage = onTickData['winddirection']['degrees'].toFixed(1);
+        let textMessage = onTickData['winddirection']['degrees'].toFixed(1) + 'º';
         text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['wind']['angleDistance']));
         
         rotate(-(onTickData['winddirection']['radians']));
@@ -1141,7 +1157,7 @@ function drawCompass(diameterCompass, diameterADI, headingDeg) {
             textMessage = onTickData['groundspeed']['mps'].toFixed(1);
             text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['speedDistance']));
         }
-        textMessage = onTickData['groundtrackdirection']['degrees'].toFixed(1);
+        textMessage = onTickData['groundtrackdirection']['degrees'].toFixed(1) + 'º';
         text(textMessage, 0, -radiusCompass-(configDict['hud_adi']['compass']['track']['angleDistance']));
         
         rotate(-(onTickData['groundtrackdirection']['radians']));
@@ -1191,13 +1207,11 @@ function postVelocityBody(width, height) {
     fill('white');
     textSize(width*0.03);
     textAlign(RIGHT);
-    let textMessage = "V0 : " + vel_xyz['0'].toFixed(1);
-    text(textMessage, width/2, height/2 - (4*height*0.03));
-    textMessage = "Vx : " + vel_xyz['x'].toFixed(1);
+    let textMessage = "Vx : " + onTickData['vel_xyz'             ]['x'].toFixed(1);
     text(textMessage, width/2, height/2 - (3*height*0.03));
-    textMessage = "Vy : " + vel_xyz['y'].toFixed(1);
+    textMessage = "Vy : " + onTickData['vel_xyz'             ]['y'].toFixed(1);
     text(textMessage, width/2, height/2 - (2*height*0.03));
-    textMessage = "Vz : " + vel_xyz['z'].toFixed(1);
+    textMessage = "Vz : " + onTickData['vel_xyz'             ]['z'].toFixed(1);
     text(textMessage, width/2, height/2 - (1*height*0.03));
 }
 

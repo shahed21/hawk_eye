@@ -33,34 +33,76 @@ function setupSampleProperties(sampledProperties) {
   sampledProperties['groundtrackdirection'] = {};
   sampledProperties['groundtrackdirection']['degrees'] = new Cesium.SampledProperty(Number);
   sampledProperties['groundtrackdirection']['radians'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['altitude'] = {};
+  sampledProperties['altitude']['meters'] = new Cesium.SampledProperty(Number);
+  sampledProperties['altitude']['feet'] = new Cesium.SampledProperty(Number);
+  sampledProperties['altitude']['yards'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['vel_d'] = {};
+  sampledProperties['vel_d']['mps'] = new Cesium.SampledProperty(Number);
+  sampledProperties['vel_d']['fps'] = new Cesium.SampledProperty(Number);
+
+  sampledProperties['alpha'] = {};
+  sampledProperties['alpha']['degrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['alpha']['radians'] = new Cesium.SampledProperty(Number);
+  
+  sampledProperties['beta'] = {};
+  sampledProperties['beta']['degrees'] = new Cesium.SampledProperty(Number);
+  sampledProperties['beta']['radians'] = new Cesium.SampledProperty(Number);
+  
+  sampledProperties['vel_xyz'] = {};
+  sampledProperties['vel_xyz']['x'] = new Cesium.SampledProperty(Number);
+  sampledProperties['vel_xyz']['y'] = new Cesium.SampledProperty(Number);
+  sampledProperties['vel_xyz']['z'] = new Cesium.SampledProperty(Number);
 }
 
-function getTimedDataSample(currentTime, sampledProperties, onTickData) {
-  onTickData['rollDegrees'] = sampledProperties['rollDegrees'].getValue(currentTime);
-  onTickData['pitchDegrees'] = sampledProperties['pitchDegrees'].getValue(currentTime);
-  onTickData['headingDegrees'] = sampledProperties['headingDegrees'].getValue(currentTime);
+function getTimedDataSample(currentTime, sampledProperties, onTickData) {                  
+  onTickData['rollDegrees'                    ] = sampledProperties['rollDegrees'                    ].getValue(currentTime);
+  onTickData['pitchDegrees'                   ] = sampledProperties['pitchDegrees'                   ].getValue(currentTime);
+  onTickData['headingDegrees'                 ] = sampledProperties['headingDegrees'                 ].getValue(currentTime);
 
-  onTickData['airspeed']['mps']   = sampledProperties['airspeed']['mps'].getValue(currentTime);
-  onTickData['airspeed']['knots'] = sampledProperties['airspeed']['knots'].getValue(currentTime);
-  onTickData['airspeed']['mph']   = sampledProperties['airspeed']['mph'].getValue(currentTime);
-  onTickData['airspeed']['kph']   = sampledProperties['airspeed']['kph'].getValue(currentTime);
+  onTickData['airspeed'            ]['mps'    ] = sampledProperties['airspeed'            ]['mps'    ].getValue(currentTime);
+  onTickData['airspeed'            ]['knots'  ] = sampledProperties['airspeed'            ]['knots'  ].getValue(currentTime);
+  onTickData['airspeed'            ]['mph'    ] = sampledProperties['airspeed'            ]['mph'    ].getValue(currentTime);
+  onTickData['airspeed'            ]['kph'    ] = sampledProperties['airspeed'            ]['kph'    ].getValue(currentTime);
+  
+  onTickData['groundspeed'         ]['mps'    ] = sampledProperties['groundspeed'         ]['mps'    ].getValue(currentTime);
+  onTickData['groundspeed'         ]['knots'  ] = sampledProperties['groundspeed'         ]['knots'  ].getValue(currentTime);
+  onTickData['groundspeed'         ]['mph'    ] = sampledProperties['groundspeed'         ]['mph'    ].getValue(currentTime);
+  onTickData['groundspeed'         ]['kph'    ] = sampledProperties['groundspeed'         ]['kph'    ].getValue(currentTime);
+  
+  onTickData['windspeed'           ]['mps'    ] = sampledProperties['windspeed'           ]['mps'    ].getValue(currentTime);
+  onTickData['windspeed'           ]['knots'  ] = sampledProperties['windspeed'           ]['knots'  ].getValue(currentTime);
+  onTickData['windspeed'           ]['mph'    ] = sampledProperties['windspeed'           ]['mph'    ].getValue(currentTime);
+  onTickData['windspeed'           ]['kph'    ] = sampledProperties['windspeed'           ]['kph'    ].getValue(currentTime);
+  
+  onTickData['winddirection'       ]['degrees'] = sampledProperties['winddirection'       ]['degrees'].getValue(currentTime);
+  onTickData['winddirection'       ]['radians'] = sampledProperties['winddirection'       ]['radians'].getValue(currentTime);
+  
+  onTickData['groundtrackdirection']['degrees'] = sampledProperties['groundtrackdirection']['degrees'].getValue(currentTime);
+  onTickData['groundtrackdirection']['radians'] = sampledProperties['groundtrackdirection']['radians'].getValue(currentTime);
+  
+  onTickData['altitude'            ]['meters' ] = sampledProperties['altitude'            ]['meters' ].getValue(currentTime);
+  onTickData['altitude'            ]['feet'   ] = sampledProperties['altitude'            ]['feet'   ].getValue(currentTime);
+  onTickData['altitude'            ]['yards'  ] = sampledProperties['altitude'            ]['yards'  ].getValue(currentTime);
+  
+  onTickData['vel_d'               ]['mps'    ] = sampledProperties['vel_d'               ]['mps'    ].getValue(currentTime);
+  onTickData['vel_d'               ]['fps'    ] = sampledProperties['vel_d'               ]['fps'    ].getValue(currentTime);
+  
+  onTickData['alpha'               ]['degrees'] = sampledProperties['alpha'               ]['degrees'].getValue(currentTime);
+  onTickData['alpha'               ]['radians'] = sampledProperties['alpha'               ]['radians'].getValue(currentTime); 
+  
+  onTickData['beta'                ]['degrees'] = sampledProperties['beta'                ]['degrees'].getValue(currentTime);
+  onTickData['beta'                ]['radians'] = sampledProperties['beta'                ]['radians'].getValue(currentTime);
+  
+  onTickData['vel_xyz'             ]['x'      ] = sampledProperties['vel_xyz'             ]['x'      ].getValue(currentTime);
+  onTickData['vel_xyz'             ]['y'      ] = sampledProperties['vel_xyz'             ]['y'      ].getValue(currentTime);
+  onTickData['vel_xyz'             ]['z'      ] = sampledProperties['vel_xyz'             ]['z'      ].getValue(currentTime);
 
-  onTickData['groundspeed']['mps']   = sampledProperties['groundspeed']['mps'].getValue(currentTime);
-  onTickData['groundspeed']['knots'] = sampledProperties['groundspeed']['knots'].getValue(currentTime);
-  onTickData['groundspeed']['mph']   = sampledProperties['groundspeed']['mph'].getValue(currentTime);
-  onTickData['groundspeed']['kph']   = sampledProperties['groundspeed']['kph'].getValue(currentTime);
-
-  onTickData['windspeed']['mps']   = sampledProperties['windspeed']['mps'].getValue(currentTime);
-  onTickData['windspeed']['knots'] = sampledProperties['windspeed']['knots'].getValue(currentTime);
-  onTickData['windspeed']['mph']   = sampledProperties['windspeed']['mph'].getValue(currentTime);
-  onTickData['windspeed']['kph']   = sampledProperties['windspeed']['kph'].getValue(currentTime);
-
-  onTickData['winddirection']['degrees']   = sampledProperties['winddirection']['degrees'].getValue(currentTime);
-  onTickData['winddirection']['radians']   = sampledProperties['winddirection']['radians'].getValue(currentTime);
-
-  onTickData['groundtrackdirection']['degrees']   = sampledProperties['groundtrackdirection']['degrees'].getValue(currentTime);
-  onTickData['groundtrackdirection']['radians']   = sampledProperties['groundtrackdirection']['radians'].getValue(currentTime);
-
+  if (isNaN(onTickData['altitude'            ]['meters' ])) {
+    console.log(onTickData['altimeter']);
+  }
 }
 
 const viewer = new Cesium.Viewer('cesiumContainer', {
