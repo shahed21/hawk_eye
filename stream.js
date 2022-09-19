@@ -173,7 +173,7 @@ function getVel_b_alpha_beta_quat(rowData) {
   } else {
     rowData['filtered_groundtrackdir_rad'] = (Math.atan2((rowData['vel_e']), (rowData['vel_n'])));
   // rowData['filtered_groundtrackdir_rad'] =                   filtered_groundtrackdir - (8 * Math.PI);
-}
+  }
 
   rowData['filtered_groundtrackdir_deg'] = (180/Math.PI) *  (rowData['filtered_groundtrackdir_rad']);
 }
