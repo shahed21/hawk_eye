@@ -57,7 +57,7 @@ function setupSampleProperties(sampledProperties) {
   sampledProperties['vel_xyz']['z'] = new Cesium.SampledProperty(Number);
 }
 
-function getTimedDataSample(currentTime, sampledProperties, onTickData) {                  
+function getTimedDataSample(currentTime, sampledProperties, onTickData) {
   onTickData['rollDegrees'                    ] = sampledProperties['rollDegrees'                    ].getValue(currentTime);
   onTickData['pitchDegrees'                   ] = sampledProperties['pitchDegrees'                   ].getValue(currentTime);
   onTickData['headingDegrees'                 ] = sampledProperties['headingDegrees'                 ].getValue(currentTime);

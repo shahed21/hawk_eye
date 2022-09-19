@@ -573,8 +573,12 @@ function drawAltimeter(width, height) {
             console.log(`${onTickData['altitude'][unitChosen]} is NaN.`)
 
         } else {
-            textMessage = (onTickData['altitude'][unitChosen]).toFixed(1);
-            text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);
+            try {
+                textMessage = (onTickData['altitude'][unitChosen]).toFixed(1);
+                text(textMessage, xpos - configDict['hud_adi']['altimeter']['mainMarkerLength'], 0);                    
+            } catch (error) {
+                console.log(error);
+            }
         }
 
         textSize(width*configDict['hud_adi']['altimeter']['majorTickTextSizeRatio']);
