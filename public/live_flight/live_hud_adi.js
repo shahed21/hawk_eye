@@ -1,7 +1,6 @@
 let diameterADI = 0;
 let diameterCompass = 0;
 
-
 const onTickData = {};
 
 // Attitude Angles In Degrees
@@ -9,7 +8,7 @@ onTickData['rollDegrees'] = 0;
 onTickData['pitchDegrees'] = 0;
 onTickData['headingDegrees'] = 0;
 
-    // Airspeeds in different units
+// Airspeeds in different units
 onTickData['airspeed'] = {};
 onTickData['airspeed']['mps'] = 0;
 onTickData['airspeed']['knots'] = 0;
@@ -1218,7 +1217,6 @@ function postVelocityBody(width, height) {
     textMessage = "Vz : " + onTickData['vel_xyz'             ]['z'].toFixed(1);
     text(textMessage, width/2, height/2 - (1*height*0.03));
 }
-
 
 function draw() {
     background(50);

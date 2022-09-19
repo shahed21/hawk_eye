@@ -156,19 +156,26 @@ function getVel_b_alpha_beta_quat(rowData) {
   // rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
   // rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
   filtered_windspeed = ((0.01) * (Math.sqrt((wind_vel_n)**2 + (wind_vel_e)**2 ))) + ((0.99) * (filtered_windspeed));
-  filtered_winddir = ((0.01) * (Math.atan2(-(wind_vel_e), -(wind_vel_n)))) + ((0.99) * (filtered_winddir));
-  filtered_groundtrackdir = ((0.01) * (Math.atan2((rowData['vel_e']), (rowData['vel_n'])))) + ((0.99) * (filtered_groundtrackdir));
+  // filtered_winddir = ((0.01) * ((Math.atan2(-(wind_vel_e), -(wind_vel_n))) + (8 * Math.PI))) + ((0.99) * (filtered_winddir));
+  // filtered_groundtrackdir = ((0.01) * ((Math.atan2((rowData['vel_e']), (rowData['vel_n']))) + (8 * Math.PI))) + ((0.99) * (filtered_groundtrackdir));
 
   rowData['filtered_windspeed_mps'] =                 filtered_windspeed;
   rowData['filtered_windspeed_knots'] = (1.943844) * (filtered_windspeed);
   rowData['filtered_windspeed_kph'] = (3.6) *        (filtered_windspeed);
   rowData['filtered_windspeed_mph'] = (2.236936) *   (filtered_windspeed);
 
-  rowData['filtered_winddir_deg'] = (180/Math.PI) *  (filtered_winddir);
-  rowData['filtered_winddir_rad'] =                   filtered_winddir;
+  rowData['filtered_winddir_rad'] =                   (Math.atan2(-(wind_vel_e), -(wind_vel_n)));
+  // rowData['filtered_winddir_rad'] =                   filtered_winddir - (8 * Math.PI);
+  rowData['filtered_winddir_deg'] = (180/Math.PI) *  (rowData['filtered_winddir_rad']);
 
-  rowData['filtered_groundtrackdir_deg'] = (180/Math.PI) *  (filtered_groundtrackdir);
-  rowData['filtered_groundtrackdir_rad'] =                   filtered_groundtrackdir;
+  if ((rowData['filtered_groundspeed_mps'])<0.15) {
+    rowData['filtered_groundtrackdir_rad'] = 0;
+  } else {
+    rowData['filtered_groundtrackdir_rad'] = (Math.atan2((rowData['vel_e']), (rowData['vel_n'])));
+  // rowData['filtered_groundtrackdir_rad'] =                   filtered_groundtrackdir - (8 * Math.PI);
+}
+
+  rowData['filtered_groundtrackdir_deg'] = (180/Math.PI) *  (rowData['filtered_groundtrackdir_rad']);
 }
 
 function getAirspeeds(rowData) {
@@ -229,9 +236,9 @@ fs.createReadStream(csvFilePath)
             });
 
             //This is where we should add more data
-            getVel_b_alpha_beta_quat(rowData);
             getAirspeeds(rowData);
             getGroundspeeds(rowData);
+            getVel_b_alpha_beta_quat(rowData);
             // getVel_b_alpha_beta(
             //   rowData,
             //   -(rowData['euler0']),
