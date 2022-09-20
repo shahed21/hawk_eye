@@ -77,38 +77,6 @@ function conjugate(q, conj) {
   conj[3] = -q[3];
 }
 
-function getVel_b_alpha_beta_quat_star(rowData) {
-  q = [rowData['Q0'], rowData['Q1'], rowData['Q2'], rowData['Q3']];
-  vel_ned = [0, rowData['vel_n'], rowData['vel_e'], rowData['vel_d']];
-  qstar = [];
-  conjugate(q, qstar);
-  mid_level = [];
-  hamilton(q, vel_ned, mid_level);
-  vel_xyz = [];
-  hamilton(mid_level, qstar, vel_xyz);
-
-  // rowData['vel_0'] = vel_xyz[0];
-  rowData['vel_x'] = vel_xyz[1];
-  rowData['vel_y'] = vel_xyz[2];
-  rowData['vel_z'] = vel_xyz[3];
-
-  rowData['vel'] = Math.sqrt((rowData['vel_x'])**2 + (rowData['vel_y'])**2 + (rowData['vel_z'])**2);
-
-  // Angle of Attack
-  alpha_filter = 0.03 * Math.atan2((rowData['vel_z']), (rowData['vel_x'])) + 0.97 * alpha_filter;
-
-  // Slip Angle
-  beta_filter = 0.03 * Math.asin((rowData['vel_y'])/(rowData['vel'])) + 0.97 * beta_filter;
-
-  if ((rowData['vel']) < 0.3) {
-    alpha_filter = 0;
-    beta_filter = 0;
-  }
-
-  rowData['alpha'] = alpha_filter;
-  rowData['beta'] = beta_filter;
-}
-
 function getVel_b_alpha_beta_quat(rowData) {
   q = [rowData['Q0'], rowData['Q1'], rowData['Q2'], rowData['Q3']];
   vel_ned = [0, rowData['vel_n'], rowData['vel_e'], rowData['vel_d']];
@@ -150,14 +118,7 @@ function getVel_b_alpha_beta_quat(rowData) {
   const wind_vel_n = rowData['vel_n'] - airvel_ned[1];
   const wind_vel_e = rowData['vel_e'] - airvel_ned[2];
 
-  // rowData['wind_vel_n'] = rowData['vel_n'] - airvel_ned[1];
-  // rowData['wind_vel_e'] = rowData['vel_e'] - airvel_ned[2];
-  // rowData['wind_vel'] = Math.sqrt((rowData['wind_vel_n'])**2 + (rowData['wind_vel_e'])**2 );
-  // rowData['wind_direction'] = Math.atan2(-(rowData['wind_vel_e']), -(rowData['wind_vel_n']));
-  // rowData['track_angle'] = Math.atan2((rowData['vel_e']), (rowData['vel_n']));
   filtered_windspeed = ((0.01) * (Math.sqrt((wind_vel_n)**2 + (wind_vel_e)**2 ))) + ((0.99) * (filtered_windspeed));
-  // filtered_winddir = ((0.01) * ((Math.atan2(-(wind_vel_e), -(wind_vel_n))) + (8 * Math.PI))) + ((0.99) * (filtered_winddir));
-  // filtered_groundtrackdir = ((0.01) * ((Math.atan2((rowData['vel_e']), (rowData['vel_n']))) + (8 * Math.PI))) + ((0.99) * (filtered_groundtrackdir));
 
   rowData['filtered_windspeed_mps'] =                 filtered_windspeed;
   rowData['filtered_windspeed_knots'] = (1.943844) * (filtered_windspeed);
@@ -165,14 +126,12 @@ function getVel_b_alpha_beta_quat(rowData) {
   rowData['filtered_windspeed_mph'] = (2.236936) *   (filtered_windspeed);
 
   rowData['filtered_winddir_rad'] =                   (Math.atan2(-(wind_vel_e), -(wind_vel_n)));
-  // rowData['filtered_winddir_rad'] =                   filtered_winddir - (8 * Math.PI);
   rowData['filtered_winddir_deg'] = (180/Math.PI) *  (rowData['filtered_winddir_rad']);
 
   if ((rowData['filtered_groundspeed_mps'])<0.15) {
     rowData['filtered_groundtrackdir_rad'] = 0;
   } else {
     rowData['filtered_groundtrackdir_rad'] = (Math.atan2((rowData['vel_e']), (rowData['vel_n'])));
-  // rowData['filtered_groundtrackdir_rad'] =                   filtered_groundtrackdir - (8 * Math.PI);
   }
 
   rowData['filtered_groundtrackdir_deg'] = (180/Math.PI) *  (rowData['filtered_groundtrackdir_rad']);
@@ -196,22 +155,6 @@ function getGroundspeeds(rowData) {
   rowData['filtered_groundspeed_knots'] = (1.943844) * (filtered_groundspeed);
   rowData['filtered_groundspeed_kph'] = (3.6) * (filtered_groundspeed);
   rowData['filtered_groundspeed_mph'] = (2.236936) * (filtered_groundspeed);
-}
-
-function getVel_b_alpha_beta(rowData, r, p, y, vel_n, vel_e, vel_d) {
-  // (cos(p) cos(y) | sin(p) sin(r) cos(y) + cos(r) sin(y) | sin(r) sin(y) - sin(p) cos(r) cos(y)
-  // -cos(p) sin(y) | cos(r) cos(y) - sin(p) sin(r) sin(y) | sin(p) cos(r) sin(y) + sin(r) cos(y)
-  // sin(p) | -cos(p) sin(r) | cos(p) cos(r))
-
-  rowData['vel_x'] = Math.cos(p) * Math.cos(y) * (vel_n) + (Math.sin(p) * Math.sin(r) * Math.cos(y) + Math.cos(r) * Math.sin(y)) * (vel_e) + (Math.sin(r) * Math.sin(y) - Math.sin(p) * Math.cos(r) * Math.cos(y)) * (vel_d);
-  rowData['vel_y'] = -Math.cos(p) * Math.sin(y) * (vel_n) + (Math.cos(r) * Math.cos(y) - Math.sin(p) * Math.sin(r) * Math.sin(y)) * (vel_e) + (Math.sin(p) * Math.cos(r) * Math.sin(y) + Math.sin(r) * Math.cos(y)) * (vel_d);
-  rowData['vel_z'] = Math.sin(p) * (vel_n) + -Math.cos(p) * Math.sin(r) * (vel_e) + Math.cos(p) * Math.cos(r) * (vel_d);
-  rowData['vel'] = Math.sqrt((rowData['vel_x'])**2 + (rowData['vel_y'])**2 + (rowData['vel_z'])**2);
-  
-  // Angle of Attack
-  rowData['alpha'] = Math.atan2((rowData['vel_z']), (rowData['vel_x']));
-  // Slip Angle
-  rowData['beta'] = Math.asin((rowData['vel_y'])/(rowData['vel']));
 }
 
 fs.createReadStream(csvFilePath)
@@ -239,15 +182,6 @@ fs.createReadStream(csvFilePath)
             getAirspeeds(rowData);
             getGroundspeeds(rowData);
             getVel_b_alpha_beta_quat(rowData);
-            // getVel_b_alpha_beta(
-            //   rowData,
-            //   -(rowData['euler0']),
-            //   rowData['euler1'],
-            //   rowData['euler2'],
-            //   rowData['vel_n'],
-            //   rowData['vel_e'],
-            //   rowData['vel_d'],
-            // );
 
             jsonData.push(rowData);
         }
